@@ -3,20 +3,61 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="indexifembedded" />
     <title>Calcs &amp; Games — Free ROI Calculators and Browser Games</title>
     <meta name="description" content="Free ROI calculators and interactive browser games." />
-    <link rel="preconnect" href="https://googleapis.com" />
-    <link rel="preconnect" href="https://gstatic.com" crossorigin />
-    <link href="https://googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <script src="https://jsdelivr.net"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; }
         html { font-size: 18px; font-family: 'Inter', sans-serif; }
         body { background-color: #E8F4F1; margin: 0; min-height: 100vh; }
-        .btn-nav { display: flex; align-items: center; justify-content: center; width: 100%; padding: 0.65rem 0.85rem; background: #4DB6AC; color: #fff; font-weight: 600; font-size: 0.85rem; border-radius: 999px; border: none; cursor: pointer; box-shadow: 0 4px 0 #338A80; transition: filter 0.18s ease, transform 0.1s ease, box-shadow 0.1s ease; text-align: center; line-height: 1.25; letter-spacing: 0.01em; user-select: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; box-sizing: border-box; }
-        .btn-nav:hover { filter: brightness(1.13); }
-        .btn-nav:active { transform: translateY(2px); box-shadow: 0 2px 0 #338A80; }
-        .btn-nav.active { background: #26A69A; box-shadow: 0 2px 0 #1a7a72; transform: translateY(2px); }
+        .page-title {
+            filter: drop-shadow(0px 8px 12px rgba(15,23,42,0.18)) drop-shadow(0px 3px 4px rgba(15,23,42,0.12));
+            transform: translateY(-4px);
+        }
+        .btn-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.65rem 0.85rem;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.08) 50%, rgba(0,0,0,0.12) 100%), #4DB6AC;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            box-shadow: inset 0px 1px 0px rgba(255,255,255,0.6), inset 0px -2px 0px rgba(0,0,0,0.15), 0px 4px 0px #2e7d75, 0px 6px 12px rgba(15,23,42,0.15);
+            transition: filter 0.18s ease, transform 0.1s ease, box-shadow 0.1s ease;
+            text-align: center;
+            line-height: 1.25;
+            letter-spacing: 0.01em;
+            user-select: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+        .btn-nav:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+            box-shadow: inset 0px 1px 0px rgba(255,255,255,0.6), inset 0px -2px 0px rgba(0,0,0,0.15), 0px 6px 0px #2e7d75, 0px 8px 14px rgba(15,23,42,0.18);
+        }
+        .btn-nav:active {
+            transform: translateY(3px);
+            background: linear-gradient(to bottom, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.18) 100%), #26A69A;
+            box-shadow: inset 0px 4px 8px rgba(0,0,0,0.28), 0px 1px 0px rgba(255,255,255,0.2);
+        }
+        .btn-nav.active {
+            transform: translateY(3px);
+            background: linear-gradient(to bottom, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.18) 100%), #26A69A;
+            box-shadow: inset 0px 4px 8px rgba(0,0,0,0.28), 0px 1px 0px rgba(255,255,255,0.2);
+        }
         .category-label { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.13em; text-transform: uppercase; color: #7a9e99; padding: 0 0.2rem; margin-top: 0.55rem; margin-bottom: 0.35rem; }
         #app-viewport { width: 100%; height: 100%; border: none; display: block; flex: 1 1 auto; }
         .ad-placeholder { background: #d4ece7; border: 2px dashed #a8d5cb; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #7aa8a2; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; gap: 7px; }
@@ -63,6 +104,19 @@
                     <div id="welcome-container" style="height:100%; display:flex; flex-direction:column;"></div>
                     <iframe id="app-viewport" src="about:blank" style="display:none; flex:1 1 auto;"></iframe>
                 </div>
+                <noscript>
+                    <div style="display:none;" aria-hidden="true">
+                        <h2>Free Calculators and Browser Games — Tool Directory</h2>
+                        <ul>
+                            <li><strong>ROI Calculator</strong> — Calculate return on investment instantly. Enter your costs and revenue to measure profitability and make smarter financial decisions.</li>
+                            <li><strong>Mortgage Calculator</strong> — Estimate your monthly mortgage repayments based on loan amount, interest rate, and term length. Plan your home purchase with confidence.</li>
+                            <li><strong>Loan Repayment</strong> — Break down any personal or business loan into a clear repayment schedule showing principal, interest, and total cost over time.</li>
+                            <li><strong>Word Puzzle</strong> — A free interactive browser word puzzle game. Test your vocabulary and spelling skills directly in your browser with no download required.</li>
+                            <li><strong>Number Dash</strong> — A fast-paced free browser number game. Challenge your mental arithmetic and reaction speed in this addictive in-browser mini game.</li>
+                            <li><strong>Memory Match</strong> — A classic free memory card matching game playable in any browser. Train your short-term memory and pattern recognition with every round.</li>
+                        </ul>
+                    </div>
+                </noscript>
             </main>
             <!-- RIGHT ADS -->
             <aside class="ads-col">
@@ -96,14 +150,14 @@
     <script>
         const APP_CONFIG = [
             { category: "CALCULATORS", items: [
-                { label: "ROI Calculator", slug: "roi-calculator", icon: "📈" },
-                { label: "Mortgage Calculator", slug: "mortgage-calculator", icon: "🏠" },
-                { label: "Loan Repayment", slug: "loan-repayment", icon: "💳" }
+                { label: "ROI Calculator",      slug: "roi-calculator" },
+                { label: "Mortgage Calculator", slug: "mortgage-calculator" },
+                { label: "Loan Repayment",      slug: "loan-repayment" }
             ]},
             { category: "GAMES", items: [
-                { label: "Word Puzzle", slug: "word-puzzle", icon: "🔤" },
-                { label: "Number Dash", slug: "number-dash", icon: "🎯" },
-                { label: "Memory Match", slug: "memory-match", icon: "🃏" }
+                { label: "Word Puzzle",  slug: "word-puzzle" },
+                { label: "Number Dash", slug: "number-dash" },
+                { label: "Memory Match", slug: "memory-match" }
             ]}
         ];
         let activeSlug = null;
@@ -119,7 +173,7 @@
                     const btn = document.createElement('button');
                     btn.className = 'btn-nav';
                     btn.id = 'btn-' + item.slug;
-                    btn.innerHTML = `<span style="margin-right:0.4em;font-size:1em;">${item.icon}</span>${item.label}`;
+                    btn.textContent = item.label;
                     btn.addEventListener('click', () => loadApp(item.slug));
                     el.appendChild(btn);
                 });
