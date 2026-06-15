@@ -43,7 +43,7 @@
 
   .page-header p {
     font-size: 1rem;
-    color: #64748b;
+    color: #1e293b;
     line-height: 1.6;
   }
 
@@ -288,6 +288,7 @@
     cursor: pointer;
     transition: filter 0.15s, transform 0.1s;
     box-shadow: 0 4px 14px rgba(30,64,175,0.3);
+    text-align: center;
   }
 
   .btn-primary:hover { filter: brightness(1.08); }
@@ -454,6 +455,7 @@
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.15s;
+    text-align: center;
   }
 
   .btn-recalc:hover {
@@ -493,7 +495,7 @@
 <div class="page-header">
   <div class="eyebrow">Smart Shopping Tool</div>
   <h1>Warehouse Membership<br>ROI Calculator</h1>
-  <p>Find out if Costco or Sam's Club pays off more for your household — and by exactly how much.</p>
+  <p>Find out if Costco or Sam's Club pays off more for your household — and by exactly how much!</p>
 </div>
 
 <!-- INPUT SECTION -->
@@ -502,7 +504,7 @@
   <!-- Card 1: Spending -->
   <div class="card">
     <div class="section-label">Step 1</div>
-    <div class="section-title">Your Monthly Grocery Spending</div>
+    <div class="section-title">Monthly Grocery Budget</div>
 
     <div class="field-group">
       <label class="field-label" for="monthly-spend">Average Monthly Grocery Spend</label>
@@ -611,7 +613,7 @@
   </div>
 
   <button class="btn-primary" id="calc-btn" onclick="calculate()">
-    Calculate My ROI →
+    Calculate My ROI
   </button>
 
 </div><!-- end #input-section -->
@@ -626,7 +628,7 @@
     <div class="winner-roi" id="res-roi">$247</div>
     <div class="winner-roi-label">Estimated Net Annual Savings after membership fee &amp; travel</div>
     <br>
-    <button class="btn-winner" id="res-cta">Shop Costco →</button>
+    <a href="#" id="res-cta" class="btn-winner" target="_blank" rel="noopener noreferrer">Explore Membership Options</a>
   </div>
 
   <div class="breakdown-grid">
@@ -658,39 +660,39 @@
     Both memberships offer nearly identical value for your situation. Either is a solid choice!
   </div>
 
-  <button class="btn-recalc" onclick="recalculate()">← Recalculate with Different Inputs</button>
+  <button class="btn-recalc" onclick="recalculate()">Recalculate with Different Inputs</button>
 
 </div><!-- end #results-section -->
 
 <script>
 // ─── ZIP → Distance Lookup ───────────────────────────────────────────────────
-// Zones based on typical US zip prefix density patterns
 function zipToDistance(zip) {
-  if (!zip || zip.length !== 5) return 8; // default suburban
-  const prefix = parseInt(zip.substring(0, 3));
+  if (!zip || zip.length !== 5) return 8;
 
-  // Dense metro areas (major cities): ~3 miles
+  const p2 = parseInt(zip.substring(0, 2), 10);
+  const p3 = parseInt(zip.substring(0, 3), 10);
+
   const metroPrefixes = [
     [10,14],[90,91],[94,94],[20,21],[22,22],[60,60],[98,98],[19,19],
     [77,77],[30,30],[85,85],[89,89],[10,10],[07,07],[02,02],[48,48],
     [11,11],[33,33],[97,97],[80,80],[37,37],[44,44],[43,43],[17,17]
   ];
 
-  // Rural areas (sparse states): ~22 miles
   const ruralPrefixes = [
     [590,599],[820,831],[570,577],[580,588],[995,999],[967,969],
     [498,499],[693,693],[679,679],[575,577],[397,397]
   ];
 
-  const p3 = parseInt(zip.substring(0, 3));
-  const p2 = parseInt(zip.substring(0, 2));
-
-  for (const [lo, hi] of metroPrefixes) {
-    if (p2 >= lo && p2 <= hi) return 3;
-  }
+  // Check rural first using 3-digit prefix
   for (const [lo, hi] of ruralPrefixes) {
     if (p3 >= lo && p3 <= hi) return 22;
   }
+
+  // Check metro using 2-digit prefix
+  for (const [lo, hi] of metroPrefixes) {
+    if (p2 >= lo && p2 <= hi) return 3;
+  }
+
   return 8; // default suburban
 }
 
@@ -701,7 +703,7 @@ function zoneLabel(dist) {
 }
 
 // ─── ZIP input live feedback ──────────────────────────────────────────────────
-document.getElementById('zip-input').addEventListener('input', function() {
+document.getElementById('zip-input').addEventListener('input', function () {
   const val = this.value.replace(/\D/g, '').slice(0, 5);
   this.value = val;
   const status = document.getElementById('zip-status');
@@ -772,9 +774,9 @@ function calculate() {
   }
 
   // Perks bonuses (same for both)
-  const gasBonus = hasGas ? 120 : 0;
-  const tiresBonus = hasTires ? 80 : 0;
-  const foodBonus = hasFood ? 30 : 0;
+  const gasBonus   = hasGas   ? 120 : 0;
+  const tiresBonus = hasTires ?  80 : 0;
+  const foodBonus  = hasFood  ?  30 : 0;
   const perksTotal = gasBonus + tiresBonus + foodBonus;
 
   // Travel cost
@@ -782,46 +784,61 @@ function calculate() {
 
   // Membership fees
   const costcoFee = 65;
-  const samsFee = 60;
+  const samsFee   = 60;
 
   // Net ROI
   const costcoROI = costcoSavings + perksTotal - travelCost - costcoFee;
-  const samsROI = samsSavings + perksTotal - travelCost - samsFee;
+  const samsROI   = samsSavings   + perksTotal - travelCost - samsFee;
 
-  // ─── Populate results ─────────────────────────────────────────────────────
+  // ─── Populate breakdown rows ───────────────────────────────────────────────
   const costcoRows = [
-    { label: 'Grocery savings', val: Math.round(costcoSavings), type: 'pos' },
-    { label: 'Gas &amp; card perks', val: gasBonus, type: gasBonus ? 'pos' : '' },
-    { label: 'Tires / electronics', val: tiresBonus, type: tiresBonus ? 'pos' : '' },
-    { label: 'Food court perks', val: foodBonus, type: foodBonus ? 'pos' : '' },
-    { label: 'Travel costs', val: -Math.round(travelCost), type: 'neg' },
-    { label: 'Membership fee', val: -costcoFee, type: 'neg' },
+    { label: 'Grocery savings',      val: Math.round(costcoSavings), type: 'pos' },
+    { label: 'Gas &amp; card perks', val: gasBonus,                  type: gasBonus   ? 'pos' : '' },
+    { label: 'Tires / electronics',  val: tiresBonus,                type: tiresBonus ? 'pos' : '' },
+    { label: 'Food court perks',     val: foodBonus,                 type: foodBonus  ? 'pos' : '' },
+    { label: 'Travel costs',         val: -Math.round(travelCost),   type: 'neg' },
+    { label: 'Membership fee',       val: -costcoFee,                type: 'neg' },
   ];
 
   const samsRows = [
-    { label: 'Grocery savings', val: Math.round(samsSavings), type: 'pos' },
-    { label: 'Gas &amp; card perks', val: gasBonus, type: gasBonus ? 'pos' : '' },
-    { label: 'Tires / electronics', val: tiresBonus, type: tiresBonus ? 'pos' : '' },
-    { label: 'Food court perks', val: foodBonus, type: foodBonus ? 'pos' : '' },
-    { label: 'Travel costs', val: -Math.round(travelCost), type: 'neg' },
-    { label: 'Membership fee', val: -samsFee, type: 'neg' },
+    { label: 'Grocery savings',      val: Math.round(samsSavings),  type: 'pos' },
+    { label: 'Gas &amp; card perks', val: gasBonus,                 type: gasBonus   ? 'pos' : '' },
+    { label: 'Tires / electronics',  val: tiresBonus,               type: tiresBonus ? 'pos' : '' },
+    { label: 'Food court perks',     val: foodBonus,                type: foodBonus  ? 'pos' : '' },
+    { label: 'Travel costs',         val: -Math.round(travelCost),  type: 'neg' },
+    { label: 'Membership fee',       val: -samsFee,                 type: 'neg' },
   ];
 
   document.getElementById('rows-costco').innerHTML = buildRows(costcoRows);
-  document.getElementById('rows-sams').innerHTML = buildRows(samsRows);
+  document.getElementById('rows-sams').innerHTML   = buildRows(samsRows);
   document.getElementById('total-costco').textContent = fmt(Math.round(costcoROI));
-  document.getElementById('total-sams').textContent = fmt(Math.round(samsROI));
+  document.getElementById('total-sams').textContent   = fmt(Math.round(samsROI));
 
-  // Winner logic
-  const diff = Math.abs(costcoROI - samsROI);
-  const isTie = diff < 10;
-
+  // ─── Winner logic ──────────────────────────────────────────────────────────
+  const diff       = Math.abs(costcoROI - samsROI);
+  const isTie      = diff < 10;
   const costcoWins = costcoROI >= samsROI;
-  const winner = costcoWins ? 'Costco' : "Sam's Club";
-  const winnerROI = costcoWins ? costcoROI : samsROI;
+  const winner     = costcoWins ? 'Costco' : "Sam's Club";
+  const winnerROI  = costcoWins ? costcoROI : samsROI;
 
-  document.getElementById('res-eyebrow').textContent = isTie ? 'It\'s Nearly a Tie!' : 'Best Value For You';
-  document.getElementById('res-name').textContent = isTie ? 'Costco & Sam\'s Club' : winner;
+  // Affiliate link placeholder — swap these hrefs for real affiliate URLs
+  const affiliateLinks = {
+    costco: '#',       // e.g. https://www.costco.com/join-costco.html?ref=affiliate
+    sams:   '#',       // e.g. https://www.samsclub.com/join?ref=affiliate
+    tie:    '#'
+  };
+
+  const ctaLink = document.getElementById('res-cta');
+  if (isTie) {
+    ctaLink.href = affiliateLinks.tie;
+  } else if (costcoWins) {
+    ctaLink.href = affiliateLinks.costco;
+  } else {
+    ctaLink.href = affiliateLinks.sams;
+  }
+
+  document.getElementById('res-eyebrow').textContent = isTie ? "It's Nearly a Tie!" : 'Best Value For You';
+  document.getElementById('res-name').textContent    = isTie ? "Costco & Sam's Club" : winner;
   document.getElementById('res-tagline').textContent = isTie
     ? 'Both memberships deliver almost identical value for your household.'
     : `${winner} gives you a better return on membership this year.`;
@@ -829,29 +846,25 @@ function calculate() {
     ? `~${fmt(Math.round(Math.max(costcoROI, samsROI)))}`
     : fmt(Math.round(winnerROI));
 
-  document.getElementById('res-cta').textContent = isTie
-    ? 'Compare Both Options →'
-    : `Shop ${winner} →`;
-
   document.getElementById('tie-note').style.display = isTie ? 'block' : 'none';
 
   // Winner badges
-  document.getElementById('badge-costco').style.display = (!isTie && costcoWins) ? 'inline' : 'none';
-  document.getElementById('badge-sams').style.display = (!isTie && !costcoWins) ? 'inline' : 'none';
+  document.getElementById('badge-costco').style.display = (!isTie && costcoWins)  ? 'inline' : 'none';
+  document.getElementById('badge-sams').style.display   = (!isTie && !costcoWins) ? 'inline' : 'none';
 
   // Highlight winner card
   document.getElementById('card-costco').classList.toggle('is-winner', !isTie && costcoWins);
-  document.getElementById('card-sams').classList.toggle('is-winner', !isTie && !costcoWins);
+  document.getElementById('card-sams').classList.toggle('is-winner',   !isTie && !costcoWins);
 
   // Swap views
-  document.getElementById('input-section').style.display = 'none';
+  document.getElementById('input-section').style.display   = 'none';
   document.getElementById('results-section').style.display = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function recalculate() {
   document.getElementById('results-section').style.display = 'none';
-  document.getElementById('input-section').style.display = 'block';
+  document.getElementById('input-section').style.display   = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>
