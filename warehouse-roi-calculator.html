@@ -1,1 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warehouse Membership ROI Calculator</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 64px;
+    color: #1e293b;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 36px;
+    max-width: 620px;
+  }
+
+  .page-header .eyebrow {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #3b82f6;
+    margin-bottom: 10px;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #0f172a;
+    margin-bottom: 10px;
+  }
+
+  .page-header p {
+    font-size: 1rem;
+    color: #64748b;
+    line-height: 1.6;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    padding: 32px;
+    width: 100%;
+    max-width: 620px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .field-group {
+    margin-bottom: 24px;
+  }
+
+  .field-group:last-child { margin-bottom: 0; }
+
+  label.field-label {
+    display: block;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 8px;
+  }
+
+  .field-hint {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: 5px;
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-prefix {
+    position: absolute;
+    left: 14px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #64748b;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  input[type="number"],
+  input[type="text"] {
+    width: 100%;
+    padding: 14px 14px 14px 34px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #0f172a;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  input[type="text"] { padding-left: 14px; }
+
+  input[type="number"]:focus,
+  input[type="text"]:focus {
+    border-color: #3b82f6;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+  }
+
+  /* Radio badges */
+  .radio-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .radio-badge input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .radio-badge label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 12px 20px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    background: #f8fafc;
+    transition: all 0.15s;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .radio-badge label:hover {
+    border-color: #3b82f6;
+    color: #1e40af;
+    background: #eff6ff;
+  }
+
+  .radio-badge input[type="radio"]:checked + label {
+    border-color: #1e40af;
+    background: #eff6ff;
+    color: #1e40af;
+    box-shadow: 0 0 0 2px rgba(30,64,175,0.15);
+  }
+
+  .radio-badge input[type="radio"]:focus + label {
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
+  }
+
+  /* Brand preference cards */
+  .brand-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .brand-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .brand-card label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #f8fafc;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .brand-card label:hover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+  }
+
+  .brand-card input[type="radio"]:checked + label {
+    border-color: #1e40af;
+    background: #eff6ff;
+    box-shadow: 0 0 0 2px rgba(30,64,175,0.15);
+  }
+
+  .brand-card .bc-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .brand-card .bc-sub {
+    font-size: 0.78rem;
+    color: #64748b;
+    line-height: 1.4;
+  }
+
+  /* Checkboxes */
+  .checkbox-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+  }
+
+  .checkbox-item:last-child { border-bottom: none; }
+
+  .checkbox-item input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    cursor: pointer;
+    accent-color: #1e40af;
+    margin-top: 1px;
+    border-radius: 4px;
+  }
+
+  .checkbox-text .cb-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.4;
+  }
+
+  .checkbox-text .cb-value {
+    font-size: 0.8rem;
+    color: #22c55e;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  /* CTA Button */
+  .btn-primary {
+    display: block;
+    width: 100%;
+    max-width: 620px;
+    padding: 17px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    background: #1e40af;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: filter 0.15s, transform 0.1s;
+    box-shadow: 0 4px 14px rgba(30,64,175,0.3);
+  }
+
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-primary:active { transform: scale(0.99); }
+
+  /* Results */
+  #results-section { display: none; width: 100%; max-width: 620px; }
+
+  .winner-card {
+    background: #eff6ff;
+    border: 1.5px solid #bfdbfe;
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .winner-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #3b82f6;
+    margin-bottom: 8px;
+  }
+
+  .winner-name {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #1e40af;
+    margin-bottom: 6px;
+  }
+
+  .winner-tagline {
+    font-size: 0.95rem;
+    color: #475569;
+    margin-bottom: 24px;
+  }
+
+  .winner-roi {
+    display: inline-block;
+    background: #1e40af;
+    color: #fff;
+    font-size: 2.8rem;
+    font-weight: 900;
+    padding: 12px 36px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .winner-roi-label {
+    font-size: 0.82rem;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 28px;
+  }
+
+  .btn-winner {
+    display: inline-block;
+    padding: 15px 40px;
+    background: #1e40af;
+    color: #fff;
+    font-size: 0.98rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: filter 0.15s;
+    box-shadow: 0 3px 10px rgba(30,64,175,0.25);
+  }
+
+  .btn-winner:hover { filter: brightness(1.1); }
+
+  /* Breakdown cards */
+  .breakdown-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .breakdown-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .breakdown-card.is-winner {
+    border-color: #bfdbfe;
+    background: #f0f9ff;
+  }
+
+  .bc-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .bc-store-name {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .bc-winner-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: #1e40af;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  .bc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 0.82rem;
+    border-bottom: 1px solid #f1f5f9;
+    gap: 8px;
+  }
+
+  .bc-row:last-child { border-bottom: none; }
+
+  .bc-row-label { color: #64748b; }
+
+  .bc-row-val {
+    font-weight: 700;
+    color: #0f172a;
+    text-align: right;
+  }
+
+  .bc-row-val.neg { color: #ef4444; }
+  .bc-row-val.pos { color: #16a34a; }
+
+  .bc-total {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 2px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .bc-total-label { font-size: 0.85rem; font-weight: 700; color: #334155; }
+  .bc-total-val { font-size: 1.2rem; font-weight: 900; color: #1e40af; }
+
+  .btn-recalc {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    background: #fff;
+    color: #475569;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-recalc:hover {
+    border-color: #3b82f6;
+    color: #1e40af;
+    background: #eff6ff;
+  }
+
+  .tie-note {
+    font-size: 0.85rem;
+    color: #64748b;
+    text-align: center;
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  .zip-status {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 6px;
+    color: #3b82f6;
+    min-height: 18px;
+    transition: color 0.2s;
+  }
+
+  @media (max-width: 480px) {
+    .brand-group { grid-template-columns: 1fr; }
+    .breakdown-grid { grid-template-columns: 1fr; }
+    .winner-roi { font-size: 2rem; padding: 10px 24px; }
+    .radio-group { flex-direction: column; }
+    .radio-badge label { justify-content: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="eyebrow">Smart Shopping Tool</div>
+  <h1>Warehouse Membership<br>ROI Calculator</h1>
+  <p>Find out if Costco or Sam's Club pays off more for your household — and by exactly how much.</p>
+</div>
+
+<!-- INPUT SECTION -->
+<div id="input-section">
+
+  <!-- Card 1: Spending -->
+  <div class="card">
+    <div class="section-label">Step 1</div>
+    <div class="section-title">Your Monthly Grocery Spending</div>
+
+    <div class="field-group">
+      <label class="field-label" for="monthly-spend">Average Monthly Grocery Spend</label>
+      <div class="input-wrapper">
+        <span class="input-prefix">$</span>
+        <input type="number" id="monthly-spend" placeholder="350" min="0" max="9999" step="10" aria-label="Monthly grocery spend in dollars">
+      </div>
+      <div class="field-hint">Include groceries, household supplies, and pantry staples.</div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Household Size</label>
+      <div class="radio-group" role="radiogroup" aria-label="Household size">
+        <div class="radio-badge">
+          <input type="radio" name="household" id="hh-small" value="small">
+          <label for="hh-small">👤 1–2 People</label>
+        </div>
+        <div class="radio-badge">
+          <input type="radio" name="household" id="hh-medium" value="medium" checked>
+          <label for="hh-medium">👥 3–4 People</label>
+        </div>
+        <div class="radio-badge">
+          <input type="radio" name="household" id="hh-large" value="large">
+          <label for="hh-large">👨‍👩‍👧‍👦 5+ People</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: Brand Preference -->
+  <div class="card">
+    <div class="section-label">Step 2</div>
+    <div class="section-title">Your Shopping Style</div>
+
+    <div class="field-group">
+      <label class="field-label">Brand Preference</label>
+      <div class="brand-group" role="radiogroup" aria-label="Brand preference">
+        <div class="brand-card">
+          <input type="radio" name="brand" id="brand-organic" value="organic" checked>
+          <label for="brand-organic">
+            <span class="bc-title">🌿 Organic &amp; Premium</span>
+            <span class="bc-sub">Kirkland Signature, organic produce, quality-first mindset</span>
+          </label>
+        </div>
+        <div class="brand-card">
+          <input type="radio" name="brand" id="brand-budget" value="budget">
+          <label for="brand-budget">
+            <span class="bc-title">💰 Budget &amp; Name Brands</span>
+            <span class="bc-sub">Best price per unit, Member's Mark, national brands</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3: Location -->
+  <div class="card">
+    <div class="section-label">Step 3</div>
+    <div class="section-title">Your Location</div>
+
+    <div class="field-group">
+      <label class="field-label" for="zip-input">Your ZIP Code</label>
+      <div class="input-wrapper">
+        <input type="text" id="zip-input" placeholder="e.g. 90210" maxlength="5" inputmode="numeric" pattern="[0-9]{5}" aria-label="ZIP code">
+      </div>
+      <div class="zip-status" id="zip-status" aria-live="polite"></div>
+      <div class="field-hint">Used to estimate your nearest warehouse distance and travel costs.</div>
+    </div>
+  </div>
+
+  <!-- Card 4: Perks -->
+  <div class="card">
+    <div class="section-label">Step 4</div>
+    <div class="section-title">Please Select any Applicable Options Below</div>
+
+    <div role="group" aria-label="Additional perks and options">
+      <label class="checkbox-item">
+        <input type="checkbox" id="cb-storage" checked aria-label="Sufficient bulk storage space">
+        <div class="checkbox-text">
+          <div class="cb-label">🏠 Sufficient bulk storage space at home</div>
+          <div class="cb-value">Unchecked = 10% savings penalty</div>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="cb-gas" aria-label="Will use store gas or credit card perks">
+        <div class="checkbox-text">
+          <div class="cb-label">⛽ Will use store gas &amp; credit card perks</div>
+          <div class="cb-value">+$120/year value</div>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="cb-tires" aria-label="Plan to buy tires or major electronics this year">
+        <div class="checkbox-text">
+          <div class="cb-label">🔧 Plan to buy tires or major electronics this year</div>
+          <div class="cb-value">+$80/year value</div>
+        </div>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="cb-food" aria-label="Will utilize food court or rotisserie chickens">
+        <div class="checkbox-text">
+          <div class="cb-label">🍗 Will utilize food court or $5 rotisserie chickens</div>
+          <div class="cb-value">+$30/year value</div>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <button class="btn-primary" id="calc-btn" onclick="calculate()">
+    Calculate My ROI →
+  </button>
+
+</div><!-- end #input-section -->
+
+<!-- RESULTS SECTION -->
+<div id="results-section">
+
+  <div class="winner-card" id="winner-card">
+    <div class="winner-eyebrow" id="res-eyebrow">Best Value For You</div>
+    <div class="winner-name" id="res-name">Costco</div>
+    <div class="winner-tagline" id="res-tagline">Gives you a better return on membership this year.</div>
+    <div class="winner-roi" id="res-roi">$247</div>
+    <div class="winner-roi-label">Estimated Net Annual Savings after membership fee &amp; travel</div>
+    <br>
+    <button class="btn-winner" id="res-cta">Shop Costco →</button>
+  </div>
+
+  <div class="breakdown-grid">
+    <div class="breakdown-card" id="card-costco">
+      <div class="bc-header">
+        <span class="bc-store-name">Costco</span>
+        <span class="bc-winner-badge" id="badge-costco" style="display:none">Winner</span>
+      </div>
+      <div id="rows-costco"></div>
+      <div class="bc-total">
+        <span class="bc-total-label">Net ROI</span>
+        <span class="bc-total-val" id="total-costco">$0</span>
+      </div>
+    </div>
+    <div class="breakdown-card" id="card-sams">
+      <div class="bc-header">
+        <span class="bc-store-name">Sam's Club</span>
+        <span class="bc-winner-badge" id="badge-sams" style="display:none">Winner</span>
+      </div>
+      <div id="rows-sams"></div>
+      <div class="bc-total">
+        <span class="bc-total-label">Net ROI</span>
+        <span class="bc-total-val" id="total-sams">$0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tie-note" id="tie-note" style="display:none">
+    Both memberships offer nearly identical value for your situation. Either is a solid choice!
+  </div>
+
+  <button class="btn-recalc" onclick="recalculate()">← Recalculate with Different Inputs</button>
+
+</div><!-- end #results-section -->
+
+<script>
+// ─── ZIP → Distance Lookup ───────────────────────────────────────────────────
+// Zones based on typical US zip prefix density patterns
+function zipToDistance(zip) {
+  if (!zip || zip.length !== 5) return 8; // default suburban
+  const prefix = parseInt(zip.substring(0, 3));
+
+  // Dense metro areas (major cities): ~3 miles
+  const metroPrefixes = [
+    [10,14],[90,91],[94,94],[20,21],[22,22],[60,60],[98,98],[19,19],
+    [77,77],[30,30],[85,85],[89,89],[10,10],[07,07],[02,02],[48,48],
+    [11,11],[33,33],[97,97],[80,80],[37,37],[44,44],[43,43],[17,17]
+  ];
+
+  // Rural areas (sparse states): ~22 miles
+  const ruralPrefixes = [
+    [590,599],[820,831],[570,577],[580,588],[995,999],[967,969],
+    [498,499],[693,693],[679,679],[575,577],[397,397]
+  ];
+
+  const p3 = parseInt(zip.substring(0, 3));
+  const p2 = parseInt(zip.substring(0, 2));
+
+  for (const [lo, hi] of metroPrefixes) {
+    if (p2 >= lo && p2 <= hi) return 3;
+  }
+  for (const [lo, hi] of ruralPrefixes) {
+    if (p3 >= lo && p3 <= hi) return 22;
+  }
+  return 8; // default suburban
+}
+
+function zoneLabel(dist) {
+  if (dist <= 3) return { label: 'Metro Area', icon: '🏙️' };
+  if (dist <= 8) return { label: 'Suburban Area', icon: '🏘️' };
+  return { label: 'Rural Area', icon: '🌾' };
+}
+
+// ─── ZIP input live feedback ──────────────────────────────────────────────────
+document.getElementById('zip-input').addEventListener('input', function() {
+  const val = this.value.replace(/\D/g, '').slice(0, 5);
+  this.value = val;
+  const status = document.getElementById('zip-status');
+  if (val.length === 5) {
+    const dist = zipToDistance(val);
+    const { label, icon } = zoneLabel(dist);
+    status.textContent = `${icon} Detected: ${label} — ~${dist} miles to nearest warehouse`;
+    status.style.color = '#3b82f6';
+  } else {
+    status.textContent = '';
+  }
+});
+
+// ─── Format dollars ───────────────────────────────────────────────────────────
+function fmt(n) {
+  const abs = Math.abs(n);
+  const s = abs.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  return (n < 0 ? '-$' : '$') + s;
+}
+
+// ─── Build breakdown rows HTML ────────────────────────────────────────────────
+function buildRows(items) {
+  return items.map(({ label, val, type }) => `
+    <div class="bc-row">
+      <span class="bc-row-label">${label}</span>
+      <span class="bc-row-val ${type || ''}">${fmt(val)}</span>
+    </div>
+  `).join('');
+}
+
+// ─── Main Calculation ─────────────────────────────────────────────────────────
+function calculate() {
+  const monthlySpend = parseFloat(document.getElementById('monthly-spend').value) || 0;
+  const household = document.querySelector('input[name="household"]:checked').value;
+  const brand = document.querySelector('input[name="brand"]:checked').value;
+  const hasStorage = document.getElementById('cb-storage').checked;
+  const hasGas = document.getElementById('cb-gas').checked;
+  const hasTires = document.getElementById('cb-tires').checked;
+  const hasFood = document.getElementById('cb-food').checked;
+  const zip = document.getElementById('zip-input').value.trim();
+
+  // Distance
+  const dist = zipToDistance(zip.length === 5 ? zip : '');
+
+  // Base grocery savings (20%)
+  let baseGrocerySavings = (monthlySpend * 12) * 0.20;
+
+  // Brand modifier
+  let costcoSavings = baseGrocerySavings;
+  let samsSavings = baseGrocerySavings;
+
+  if (brand === 'organic') {
+    costcoSavings *= 1.10;
+  } else {
+    samsSavings *= 1.10;
+  }
+
+  // Household size multiplier
+  if (household === 'small') {
+    costcoSavings *= 0.85;
+    samsSavings *= 0.85;
+  }
+
+  // Bulk storage penalty
+  if (!hasStorage) {
+    costcoSavings *= 0.90;
+    samsSavings *= 0.90;
+  }
+
+  // Perks bonuses (same for both)
+  const gasBonus = hasGas ? 120 : 0;
+  const tiresBonus = hasTires ? 80 : 0;
+  const foodBonus = hasFood ? 30 : 0;
+  const perksTotal = gasBonus + tiresBonus + foodBonus;
+
+  // Travel cost
+  const travelCost = dist * 2 * 12 * 0.45;
+
+  // Membership fees
+  const costcoFee = 65;
+  const samsFee = 60;
+
+  // Net ROI
+  const costcoROI = costcoSavings + perksTotal - travelCost - costcoFee;
+  const samsROI = samsSavings + perksTotal - travelCost - samsFee;
+
+  // ─── Populate results ─────────────────────────────────────────────────────
+  const costcoRows = [
+    { label: 'Grocery savings', val: Math.round(costcoSavings), type: 'pos' },
+    { label: 'Gas &amp; card perks', val: gasBonus, type: gasBonus ? 'pos' : '' },
+    { label: 'Tires / electronics', val: tiresBonus, type: tiresBonus ? 'pos' : '' },
+    { label: 'Food court perks', val: foodBonus, type: foodBonus ? 'pos' : '' },
+    { label: 'Travel costs', val: -Math.round(travelCost), type: 'neg' },
+    { label: 'Membership fee', val: -costcoFee, type: 'neg' },
+  ];
+
+  const samsRows = [
+    { label: 'Grocery savings', val: Math.round(samsSavings), type: 'pos' },
+    { label: 'Gas &amp; card perks', val: gasBonus, type: gasBonus ? 'pos' : '' },
+    { label: 'Tires / electronics', val: tiresBonus, type: tiresBonus ? 'pos' : '' },
+    { label: 'Food court perks', val: foodBonus, type: foodBonus ? 'pos' : '' },
+    { label: 'Travel costs', val: -Math.round(travelCost), type: 'neg' },
+    { label: 'Membership fee', val: -samsFee, type: 'neg' },
+  ];
+
+  document.getElementById('rows-costco').innerHTML = buildRows(costcoRows);
+  document.getElementById('rows-sams').innerHTML = buildRows(samsRows);
+  document.getElementById('total-costco').textContent = fmt(Math.round(costcoROI));
+  document.getElementById('total-sams').textContent = fmt(Math.round(samsROI));
+
+  // Winner logic
+  const diff = Math.abs(costcoROI - samsROI);
+  const isTie = diff < 10;
+
+  const costcoWins = costcoROI >= samsROI;
+  const winner = costcoWins ? 'Costco' : "Sam's Club";
+  const winnerROI = costcoWins ? costcoROI : samsROI;
+
+  document.getElementById('res-eyebrow').textContent = isTie ? 'It\'s Nearly a Tie!' : 'Best Value For You';
+  document.getElementById('res-name').textContent = isTie ? 'Costco & Sam\'s Club' : winner;
+  document.getElementById('res-tagline').textContent = isTie
+    ? 'Both memberships deliver almost identical value for your household.'
+    : `${winner} gives you a better return on membership this year.`;
+  document.getElementById('res-roi').textContent = isTie
+    ? `~${fmt(Math.round(Math.max(costcoROI, samsROI)))}`
+    : fmt(Math.round(winnerROI));
+
+  document.getElementById('res-cta').textContent = isTie
+    ? 'Compare Both Options →'
+    : `Shop ${winner} →`;
+
+  document.getElementById('tie-note').style.display = isTie ? 'block' : 'none';
+
+  // Winner badges
+  document.getElementById('badge-costco').style.display = (!isTie && costcoWins) ? 'inline' : 'none';
+  document.getElementById('badge-sams').style.display = (!isTie && !costcoWins) ? 'inline' : 'none';
+
+  // Highlight winner card
+  document.getElementById('card-costco').classList.toggle('is-winner', !isTie && costcoWins);
+  document.getElementById('card-sams').classList.toggle('is-winner', !isTie && !costcoWins);
+
+  // Swap views
+  document.getElementById('input-section').style.display = 'none';
+  document.getElementById('results-section').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function recalculate() {
+  document.getElementById('results-section').style.display = 'none';
+  document.getElementById('input-section').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
