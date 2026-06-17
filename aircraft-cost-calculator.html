@@ -1,1 +1,1002 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aircraft Ownership Cost Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    padding: 36px 40px 28px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #fff;
+  }
+  .page-header h1 {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .page-header p {
+    font-size: 0.9rem;
+    color: #475569;
+    font-weight: 400;
+  }
+
+  .main-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 36px 40px 60px;
+  }
+
+  .card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.05);
+  }
+
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .field-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+    letter-spacing: 0.01em;
+    margin-bottom: 7px;
+  }
+  .field-note {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 5px;
+    font-weight: 400;
+  }
+  .field-group {
+    margin-bottom: 18px;
+  }
+
+  .input-wrapper {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    transition: border-color 0.15s;
+  }
+  .input-wrapper:focus-within {
+    border-color: #1e40af;
+    box-shadow: 0 0 0 3px rgba(30,64,175,0.08);
+  }
+  .input-affix {
+    background: #eef3fb;
+    color: #475569;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    border-right: 1px solid #e2e8f0;
+    min-width: 42px;
+    justify-content: center;
+  }
+  .input-affix.suffix {
+    border-right: none;
+    border-left: 1px solid #e2e8f0;
+  }
+  .input-wrapper input[type="number"] {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: #0f172a;
+    background: transparent;
+    font-weight: 500;
+    -moz-appearance: textfield;
+    min-width: 0;
+  }
+  .input-wrapper input::-webkit-outer-spin-button,
+  .input-wrapper input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .styled-select {
+    width: 100%;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 10px 40px 10px 14px;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: #0f172a;
+    background: #fff;
+    font-weight: 500;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23475569' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .styled-select:focus {
+    border-color: #1e40af;
+    box-shadow: 0 0 0 3px rgba(30,64,175,0.08);
+  }
+
+  .specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .badge-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .badge {
+    padding: 8px 18px;
+    border-radius: 7px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .badge:hover {
+    border-color: #3b82f6;
+    color: #1e40af;
+    background: #eff6ff;
+  }
+  .badge.active {
+    background: #1e40af;
+    color: #fff;
+    border-color: #1e40af;
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .checkbox-row input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: #1e40af;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .checkbox-row span {
+    font-size: 0.87rem;
+    font-weight: 600;
+    color: #0f172a;
+  }
+  .leaseback-extra {
+    margin-top: 14px;
+    display: none;
+  }
+
+  .alert-box {
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    color: #92400e;
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 14px 24px;
+    background: #1e40af;
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s;
+    letter-spacing: -0.01em;
+  }
+  .btn-primary:hover { background: #1d3fa0; }
+  .btn-primary:active { background: #1e3a8a; }
+
+  .btn-secondary {
+    padding: 11px 22px;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .btn-secondary:hover { background: #e2e8f0; border-color: #cbd5e1; }
+
+  .warning-strip {
+    background: #fef9ec;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    color: #78350f;
+    font-weight: 500;
+    margin-top: 10px;
+    display: none;
+  }
+
+  /* ===== RESULTS ===== */
+  #results-view { display: none; }
+
+  .print-brand {
+    display: none;
+    font-size: 0.8rem;
+    color: #475569;
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+
+  .summary-banner {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 48px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .summary-metric { flex: 1; min-width: 180px; }
+  .summary-metric .metric-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #3b82f6;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .summary-metric .metric-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1e40af;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .summary-metric .metric-sub {
+    font-size: 0.78rem;
+    color: #60a5fa;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .result-block {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.04);
+  }
+  .result-block-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 9px 0;
+    border-bottom: 1px solid #f1f5f9;
+    gap: 16px;
+  }
+  .result-row:last-child { border-bottom: none; }
+  .rr-label {
+    font-size: 0.87rem;
+    color: #475569;
+    font-weight: 500;
+  }
+  .rr-note {
+    font-size: 0.73rem;
+    color: #94a3b8;
+    margin-top: 2px;
+    font-weight: 400;
+  }
+  .rr-value {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #0f172a;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .rr-value.credit { color: #059669; }
+
+  .highlight-row {
+    background: #eff6ff;
+    margin: 4px -4px;
+    padding: 10px 8px !important;
+    border-radius: 6px;
+    border-bottom: none !important;
+  }
+
+  .action-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .action-row .btn-primary {
+    width: auto;
+    flex: 1;
+    min-width: 160px;
+  }
+  .action-row .btn-secondary {
+    flex: 1;
+    min-width: 160px;
+  }
+
+  @media (max-width: 640px) {
+    .specs-grid { grid-template-columns: 1fr; }
+    .main-container { padding: 20px 16px 40px; }
+    .page-header { padding: 24px 16px 20px; }
+    .card { padding: 20px 18px; }
+    .result-block { padding: 20px 18px; }
+    .summary-banner { padding: 22px 20px; gap: 24px; }
+    .summary-metric .metric-value { font-size: 1.55rem; }
+    .badge { padding: 7px 13px; font-size: 0.8rem; }
+  }
+
+  @media print {
+    body { font-size: 12px; background: #fff; }
+    .page-header, #form-view, .action-row, .no-print { display: none !important; }
+    .print-brand { display: block !important; }
+    #results-view { display: block !important; }
+    .summary-banner { background: #f0f4ff; border: 1px solid #c7d7fc; }
+    .card, .result-block { box-shadow: none; break-inside: avoid; }
+    .main-container { padding: 20px; max-width: 100%; }
+    .summary-metric .metric-value { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header no-print">
+  <h1>Aircraft Ownership Cost Calculator</h1>
+  <p>Private pilot acquisition, financing, and annual operating projections</p>
+</div>
+
+<div class="main-container">
+
+  <!-- FORM VIEW -->
+  <div id="form-view">
+
+    <div class="alert-box" id="alert-box">
+      Please select an aircraft from the dropdown, or fill in all physical specification fields (price, fuel burn, TBO, overhaul cost) before calculating.
+    </div>
+
+    <!-- SECTION 1 -->
+    <div class="card">
+      <div class="section-title">Aircraft Profile &amp; Specifications</div>
+
+      <div class="field-group">
+        <label class="field-label" for="aircraft-select">Aircraft Model</label>
+        <select class="styled-select" id="aircraft-select" onchange="applyProfile()">
+          <option value="">— Select a model to auto-fill specs —</option>
+          <option value="c150">Cessna 150/152</option>
+          <option value="c172">Cessna 172 Skyhawk</option>
+          <option value="c182">Cessna 182 Skylane</option>
+          <option value="pa28c">Piper PA-28 Cherokee</option>
+          <option value="pa28a">Piper PA-28 Archer</option>
+          <option value="grumman">Grumman AA-5 Series</option>
+          <option value="da40">Diamond DA40</option>
+          <option value="sr22">Cirrus SR22</option>
+          <option value="bonanza">Beechcraft Bonanza</option>
+          <option value="custom">Custom / Other Aircraft</option>
+        </select>
+      </div>
+
+      <div class="specs-grid">
+        <div class="field-group">
+          <label class="field-label">Aircraft Purchase Price</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="purchase-price" placeholder="0" min="0" step="1000">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Down Payment Amount</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="down-payment" placeholder="0" min="0" step="500">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Fuel Burn Rate</label>
+          <div class="input-wrapper">
+            <input type="number" id="fuel-gph" placeholder="0" min="0" step="0.1">
+            <span class="input-affix suffix">GPH</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Engine TBO Limit</label>
+          <div class="input-wrapper">
+            <input type="number" id="tbo-limit" placeholder="0" min="0" step="100">
+            <span class="input-affix suffix">HRS</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Current Engine Time (SMOH)</label>
+          <div class="input-wrapper">
+            <input type="number" id="current-time" placeholder="0" min="0" step="50">
+            <span class="input-affix suffix">HRS</span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Estimated Overhaul Cost</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="overhaul-cost" placeholder="0" min="0" step="1000">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="card">
+      <div class="section-title">Co-op Shares &amp; Loan Financing</div>
+
+      <div class="field-group">
+        <label class="field-label">Partnership Share</label>
+        <div class="badge-group" id="share-group">
+          <span class="badge active" data-value="1" onclick="selectBadge('share-group', this)">Sole Owner</span>
+          <span class="badge" data-value="2" onclick="selectBadge('share-group', this)">1/2 Share</span>
+          <span class="badge" data-value="3" onclick="selectBadge('share-group', this)">1/3 Share</span>
+          <span class="badge" data-value="4" onclick="selectBadge('share-group', this)">1/4 Share</span>
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-top:22px;">
+        <label class="field-label">Credit Profile</label>
+        <div class="badge-group" id="credit-group">
+          <span class="badge active" data-value="7.25" onclick="selectBadge('credit-group', this)">Excellent — 7.25%</span>
+          <span class="badge" data-value="8.50" onclick="selectBadge('credit-group', this)">Good — 8.50%</span>
+          <span class="badge" data-value="10.50" data-fair="true" onclick="selectBadge('credit-group', this)">Fair — 10.50%</span>
+        </div>
+        <div class="warning-strip" id="fair-warning">
+          Fair credit requires a minimum 25% down payment. The calculation will use the 25% floor value if your entered down payment falls short.
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-top:22px;">
+        <label class="field-label">Loan Term</label>
+        <div class="badge-group" id="term-group">
+          <span class="badge" data-value="10" onclick="selectBadge('term-group', this)">10 Years</span>
+          <span class="badge active" data-value="15" onclick="selectBadge('term-group', this)">15 Years</span>
+          <span class="badge" data-value="20" onclick="selectBadge('term-group', this)">20 Years</span>
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-top:22px; max-width: 280px;">
+        <label class="field-label">State Sales / Use Tax</label>
+        <div class="input-wrapper">
+          <input type="number" id="state-tax" value="0" min="0" max="20" step="0.1">
+          <span class="input-affix suffix">%</span>
+        </div>
+        <p class="field-note">Note: Check your local state laws, as some states cap maximum aircraft use tax.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="card">
+      <div class="section-title">Storage &amp; Fixed Overhead Fees</div>
+
+      <div class="field-group">
+        <label class="field-label">Landing Gear Configuration</label>
+        <div class="badge-group" id="gear-group">
+          <span class="badge active" data-value="fixed" onclick="selectBadge('gear-group', this)">Fixed Gear</span>
+          <span class="badge" data-value="retractable" onclick="selectBadge('gear-group', this)">Retractable Complex (+$1,000 ins / +$500 annual)</span>
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-top:22px;">
+        <label class="field-label">Avionics / Tech Upgrade Annual Fund</label>
+        <div class="badge-group" id="avionics-group">
+          <span class="badge active" data-value="0" onclick="selectBadge('avionics-group', this)">$0 — Legacy</span>
+          <span class="badge" data-value="1000" onclick="selectBadge('avionics-group', this)">$1,000 — Mid</span>
+          <span class="badge" data-value="2500" onclick="selectBadge('avionics-group', this)">$2,500 — Full Glass</span>
+        </div>
+      </div>
+
+      <div class="specs-grid" style="margin-top:22px;">
+        <div class="field-group">
+          <label class="field-label">Annual Hangar / Tiedown Fees</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="hangar-cost" placeholder="0" min="0" step="100">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Base Annual Inspection Cost</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="annual-cost" placeholder="0" min="0" step="100">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Annual Hull Insurance Premium</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="insurance-cost" placeholder="0" min="0" step="100">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Fuel Cost per Gallon</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="fuel-cost" value="6.50" min="0" step="0.05">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="card">
+      <div class="section-title">Flight Utilization &amp; Revenue Offsets</div>
+
+      <div class="field-group" style="max-width: 300px;">
+        <label class="field-label">Your Planned Personal Flight Hours / Year</label>
+        <div class="input-wrapper">
+          <input type="number" id="flight-hours" value="75" min="1" step="5">
+          <span class="input-affix suffix">HRS</span>
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-top:22px;">
+        <label class="checkbox-row">
+          <input type="checkbox" id="leaseback-toggle" onchange="toggleLeaseback()">
+          <span>Enable Flight School Leaseback Revenue Offset</span>
+        </label>
+        <div class="leaseback-extra" id="leaseback-extra">
+          <div class="field-group" style="max-width:300px; margin-top:14px; margin-bottom:4px;">
+            <label class="field-label">School Usage Hours / Year</label>
+            <div class="input-wrapper">
+              <input type="number" id="school-hours" value="200" min="0" step="10">
+              <span class="input-affix suffix">HRS</span>
+            </div>
+          </div>
+          <p class="field-note">Net leaseback credit rate applied: $65/hr (conservative industry average)</p>
+        </div>
+      </div>
+
+      <div style="margin-top:30px;">
+        <button class="btn-primary" onclick="validateAndCalculate()">Calculate Costs</button>
+      </div>
+    </div>
+
+  </div>
+  <!-- END FORM VIEW -->
+
+
+  <!-- RESULTS VIEW -->
+  <div id="results-view">
+
+    <div class="print-brand">calcsmadesimple.com | Aircraft Financial Asset Projection Summary</div>
+
+    <div class="summary-banner">
+      <div class="summary-metric">
+        <div class="metric-label">Total Out-of-Pocket Per Year</div>
+        <div class="metric-value" id="res-annual-total">—</div>
+        <div class="metric-sub" id="res-aircraft-label">—</div>
+      </div>
+      <div class="summary-metric">
+        <div class="metric-label">True Blended Cost Per Flight Hour</div>
+        <div class="metric-value" id="res-per-hour">—</div>
+        <div class="metric-sub" id="res-hours-label">—</div>
+      </div>
+    </div>
+
+    <!-- Block A -->
+    <div class="result-block">
+      <div class="result-block-title">Capital Needed at Closing</div>
+
+      <div class="result-row">
+        <div class="rr-label">Your Share of Loan Principal</div>
+        <div class="rr-value" id="res-principal">—</div>
+      </div>
+      <div class="result-row">
+        <div class="rr-label">Interest Rate Applied</div>
+        <div class="rr-value" id="res-interest-rate">—</div>
+      </div>
+      <div class="result-row">
+        <div class="rr-label">Your Share of Down Payment</div>
+        <div class="rr-value" id="res-down">—</div>
+      </div>
+      <div class="result-row">
+        <div class="rr-label">State / Use Tax on Your Share</div>
+        <div class="rr-value" id="res-tax">—</div>
+      </div>
+      <div class="result-row">
+        <div>
+          <div class="rr-label">Acquisition / Escrow Buffer</div>
+          <div class="rr-note">$1,500 total divided by partner count</div>
+        </div>
+        <div class="rr-value" id="res-buffer">—</div>
+      </div>
+      <div class="result-row highlight-row">
+        <div class="rr-label" style="font-weight:700; color:#1e40af;">True Cash Needed at Closing</div>
+        <div class="rr-value" style="color:#1e40af;" id="res-closing-total">—</div>
+      </div>
+    </div>
+
+    <!-- Block B -->
+    <div class="result-block">
+      <div class="result-block-title">Ongoing Operating Obligations</div>
+
+      <div class="result-row">
+        <div class="rr-label">Monthly Loan Payment (Your Share)</div>
+        <div class="rr-value" id="res-monthly">—</div>
+      </div>
+      <div class="result-row">
+        <div class="rr-label">Annual Loan Payments Total</div>
+        <div class="rr-value" id="res-annual-loan">—</div>
+      </div>
+      <div class="result-row">
+        <div>
+          <div class="rr-label">Shared Fixed Annual Overhead</div>
+          <div class="rr-note">Hangar + Inspection + Insurance + Avionics fund, divided by partners</div>
+        </div>
+        <div class="rr-value" id="res-fixed-overhead">—</div>
+      </div>
+      <div class="result-row">
+        <div>
+          <div class="rr-label">Annual Direct Variable Expenses</div>
+          <div class="rr-note">Fuel burn + $4.50/hr oil consumables × personal flight hours</div>
+        </div>
+        <div class="rr-value" id="res-variable">—</div>
+      </div>
+      <div class="result-row">
+        <div>
+          <div class="rr-label">Annual Engine Reserve (Your Share)</div>
+          <div class="rr-note">Overhaul cost ÷ max(TBO − SMOH, 50 hrs) ÷ partners × personal hours</div>
+        </div>
+        <div class="rr-value" id="res-engine-reserve">—</div>
+      </div>
+    </div>
+
+    <!-- Block C (leaseback) -->
+    <div class="result-block" id="res-leaseback-block" style="display:none;">
+      <div class="result-block-title">Revenue Retention — Flight School Leaseback</div>
+      <div class="result-row">
+        <div class="rr-label">School Usage Hours / Year</div>
+        <div class="rr-value" id="res-school-hours">—</div>
+      </div>
+      <div class="result-row">
+        <div class="rr-label">Net Leaseback Credit Rate</div>
+        <div class="rr-value">$65.00 / hr</div>
+      </div>
+      <div class="result-row">
+        <div class="rr-label">Your Share of Annual Leaseback Revenue</div>
+        <div class="rr-value credit" id="res-leaseback-credit">—</div>
+      </div>
+    </div>
+
+    <!-- Bottom line -->
+    <div class="result-block" style="border: 1px solid #bfdbfe; background: #eff6ff;">
+      <div class="result-block-title" style="color:#1e40af; border-color: #bfdbfe;">Ownership Bottom Line</div>
+
+      <div class="result-row" style="border-color:#dbeafe;">
+        <div class="rr-label">Annual Loan Payments</div>
+        <div class="rr-value" id="res-bl-loan">—</div>
+      </div>
+      <div class="result-row" style="border-color:#dbeafe;">
+        <div class="rr-label">Shared Fixed Overhead</div>
+        <div class="rr-value" id="res-bl-fixed">—</div>
+      </div>
+      <div class="result-row" style="border-color:#dbeafe;">
+        <div class="rr-label">Direct Fuel &amp; Oil Expenses</div>
+        <div class="rr-value" id="res-bl-variable">—</div>
+      </div>
+      <div class="result-row" style="border-color:#dbeafe;">
+        <div class="rr-label">Engine Reserve Contributions</div>
+        <div class="rr-value" id="res-bl-engine">—</div>
+      </div>
+      <div class="result-row" id="res-bl-leaseback-row" style="display:none; border-color:#dbeafe;">
+        <div class="rr-label">Leaseback Revenue Offset</div>
+        <div class="rr-value credit" id="res-bl-leaseback">—</div>
+      </div>
+      <div class="result-row" style="border-top: 2px solid #93c5fd; border-bottom:none; padding-top:16px; margin-top:8px;">
+        <div class="rr-label" style="font-size:1rem; font-weight:700; color:#1e40af;">Out-of-Pocket Cost Per Year</div>
+        <div class="rr-value" style="font-size:1.2rem; color:#1e40af;" id="res-bl-annual">—</div>
+      </div>
+      <div class="result-row" style="border-bottom:none; padding-top:6px;">
+        <div class="rr-label" style="font-size:1rem; font-weight:700; color:#1e40af;">True Blended Cost Per Flight Hour</div>
+        <div class="rr-value" style="font-size:1.2rem; color:#1e40af;" id="res-bl-hourly">—</div>
+      </div>
+    </div>
+
+    <div class="action-row no-print">
+      <button class="btn-primary" onclick="window.print()">Print Results</button>
+      <button class="btn-secondary" onclick="showForm()">Adjust Variables &amp; Recalculate</button>
+    </div>
+
+  </div>
+  <!-- END RESULTS VIEW -->
+
+</div>
+
+<script>
+  var PROFILES = {
+    c150:    { price: 45000,  down: 9000,  gph: 6.0,  tbo: 2000, smoh: 1200, overhaul: 30000, hangar: 3000,  annual: 2200, ins: 1400 },
+    c172:    { price: 145000, down: 29000, gph: 8.5,  tbo: 2000, smoh: 1000, overhaul: 38000, hangar: 3600,  annual: 2800, ins: 2200 },
+    c182:    { price: 185000, down: 45000, gph: 12.0, tbo: 1500, smoh: 800,  overhaul: 45000, hangar: 4000,  annual: 3400, ins: 2900 },
+    pa28c:   { price: 85000,  down: 18000, gph: 8.2,  tbo: 2000, smoh: 1100, overhaul: 35000, hangar: 3600,  annual: 2500, ins: 1900 },
+    pa28a:   { price: 155000, down: 35000, gph: 9.0,  tbo: 2000, smoh: 950,  overhaul: 38000, hangar: 3600,  annual: 2900, ins: 2400 },
+    grumman: { price: 95000,  down: 20000, gph: 8.5,  tbo: 2000, smoh: 1250, overhaul: 36000, hangar: 3600,  annual: 2600, ins: 2100 },
+    da40:    { price: 215000, down: 50000, gph: 5.5,  tbo: 1800, smoh: 600,  overhaul: 42000, hangar: 4200,  annual: 3100, ins: 2800 },
+    sr22:    { price: 365000, down: 90000, gph: 16.0, tbo: 2000, smoh: 1100, overhaul: 55000, hangar: 5400,  annual: 4500, ins: 4600 },
+    bonanza: { price: 245000, down: 60000, gph: 14.5, tbo: 1700, smoh: 700,  overhaul: 55000, hangar: 4800,  annual: 4500, ins: 4200 }
+  };
+
+  var PROFILE_LABELS = {
+    c150: 'Cessna 150/152', c172: 'Cessna 172 Skyhawk', c182: 'Cessna 182 Skylane',
+    pa28c: 'Piper PA-28 Cherokee', pa28a: 'Piper PA-28 Archer', grumman: 'Grumman AA-5 Series',
+    da40: 'Diamond DA40', sr22: 'Cirrus SR22', bonanza: 'Beechcraft Bonanza', custom: 'Custom Aircraft'
+  };
+
+  function fmt(n) {
+    var num = parseFloat(n);
+    return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function getActiveBadgeValue(groupId) {
+    var active = document.querySelector('#' + groupId + ' .badge.active');
+    return active ? active.getAttribute('data-value') : null;
+  }
+
+  function selectBadge(groupId, el) {
+    var badges = document.querySelectorAll('#' + groupId + ' .badge');
+    for (var i = 0; i < badges.length; i++) badges[i].classList.remove('active');
+    el.classList.add('active');
+    if (groupId === 'credit-group') {
+      var isFair = el.getAttribute('data-fair') === 'true';
+      document.getElementById('fair-warning').style.display = isFair ? 'block' : 'none';
+    }
+  }
+
+  function applyProfile() {
+    var key = document.getElementById('aircraft-select').value;
+    var ids = ['purchase-price','down-payment','fuel-gph','tbo-limit','current-time','overhaul-cost','hangar-cost','annual-cost','insurance-cost'];
+
+    if (!key || key === 'custom') {
+      for (var i = 0; i < ids.length; i++) {
+        document.getElementById(ids[i]).value = '';
+        document.getElementById(ids[i]).removeAttribute('readonly');
+      }
+      return;
+    }
+
+    var p = PROFILES[key];
+    if (!p) return;
+    document.getElementById('purchase-price').value  = p.price;
+    document.getElementById('down-payment').value    = p.down;
+    document.getElementById('fuel-gph').value        = p.gph;
+    document.getElementById('tbo-limit').value       = p.tbo;
+    document.getElementById('current-time').value    = p.smoh;
+    document.getElementById('overhaul-cost').value   = p.overhaul;
+    document.getElementById('hangar-cost').value     = p.hangar;
+    document.getElementById('annual-cost').value     = p.annual;
+    document.getElementById('insurance-cost').value  = p.ins;
+  }
+
+  function toggleLeaseback() {
+    var checked = document.getElementById('leaseback-toggle').checked;
+    document.getElementById('leaseback-extra').style.display = checked ? 'block' : 'none';
+  }
+
+  function validateAndCalculate() {
+    var price  = parseFloat(document.getElementById('purchase-price').value) || 0;
+    var gph    = parseFloat(document.getElementById('fuel-gph').value)       || 0;
+    var tbo    = parseFloat(document.getElementById('tbo-limit').value)      || 0;
+    var ovhl   = parseFloat(document.getElementById('overhaul-cost').value)  || 0;
+    var alertBox = document.getElementById('alert-box');
+
+    if (price <= 0 || gph <= 0 || tbo <= 0 || ovhl <= 0) {
+      alertBox.style.display = 'block';
+      window.scrollTo({ top: 0 });
+      return;
+    }
+    alertBox.style.display = 'none';
+    calculate();
+  }
+
+  function calculate() {
+    var price    = parseFloat(document.getElementById('purchase-price').value) || 0;
+    var rawDown  = parseFloat(document.getElementById('down-payment').value)   || 0;
+    var gph      = parseFloat(document.getElementById('fuel-gph').value)       || 0;
+    var tbo      = parseFloat(document.getElementById('tbo-limit').value)      || 0;
+    var smoh     = parseFloat(document.getElementById('current-time').value)   || 0;
+    var ovhlCost = parseFloat(document.getElementById('overhaul-cost').value)  || 0;
+    var hangar   = parseFloat(document.getElementById('hangar-cost').value)    || 0;
+    var annInsp  = parseFloat(document.getElementById('annual-cost').value)    || 0;
+    var insur    = parseFloat(document.getElementById('insurance-cost').value) || 0;
+    var fuelCost = parseFloat(document.getElementById('fuel-cost').value)      || 6.50;
+    var stateTax = parseFloat(document.getElementById('state-tax').value)      || 0;
+    var flightHrs= parseFloat(document.getElementById('flight-hours').value)   || 75;
+
+    var partners    = parseInt(getActiveBadgeValue('share-group'), 10)   || 1;
+    var rateAnnual  = parseFloat(getActiveBadgeValue('credit-group'))    || 7.25;
+    var termYears   = parseInt(getActiveBadgeValue('term-group'), 10)    || 15;
+    var gearType    = getActiveBadgeValue('gear-group')                  || 'fixed';
+    var avionics    = parseFloat(getActiveBadgeValue('avionics-group'))  || 0;
+
+    var activeCreditBadge = document.querySelector('#credit-group .badge.active');
+    var isFair = activeCreditBadge ? activeCreditBadge.getAttribute('data-fair') === 'true' : false;
+    var isLeaseback = document.getElementById('leaseback-toggle').checked;
+    var schoolHrs   = parseFloat(document.getElementById('school-hours').value) || 0;
+
+    // Fair credit floor
+    var minDown = price * 0.25;
+    var downPayment = rawDown;
+    var fairFloorApplied = false;
+    if (isFair && rawDown < minDown) {
+      downPayment = minDown;
+      fairFloorApplied = true;
+    }
+
+    // Retractable gear surcharges
+    var insurAdj   = insur;
+    var annInspAdj = annInsp;
+    if (gearType === 'retractable') {
+      insurAdj   += 1000;
+      annInspAdj += 500;
+    }
+
+    // Principal
+    var principalTotal = price - downPayment;
+    var principalShare = principalTotal / partners;
+    var downShare      = downPayment    / partners;
+
+    // Tax
+    var taxTotal = price * (stateTax / 100);
+    var taxShare = taxTotal / partners;
+
+    // Escrow buffer
+    var bufferShare = 1500.0 / partners;
+
+    // True closing cash
+    var closingTotal = downShare + taxShare + bufferShare;
+
+    // Amortization: M = P * [r(1+r)^n] / [(1+r)^n - 1]
+    var rMonthly = (rateAnnual / 100.0) / 12.0;
+    var nMonths  = termYears * 12;
+    var monthlyPayment = 0;
+    if (rMonthly === 0) {
+      monthlyPayment = principalShare / nMonths;
+    } else {
+      var rn = Math.pow(1 + rMonthly, nMonths);
+      monthlyPayment = principalShare * (rMonthly * rn) / (rn - 1);
+    }
+    var annualLoan = monthlyPayment * 12;
+
+    // Fixed overhead (shared)
+    var totalFixedRaw = hangar + annInspAdj + insurAdj + avionics;
+    var totalFixed    = totalFixedRaw / partners;
+
+    // Variable expenses (personal, not split by share)
+    var hourlyVarCost  = (gph * fuelCost) + 4.50;
+    var annualVariable = hourlyVarCost * flightHrs;
+
+    // Engine reserve (split by partner, multiplied by personal hours)
+    var remainingHrs         = Math.max(tbo - smoh, 50);
+    var reserveRatePerHr     = ovhlCost / remainingHrs;
+    var reservePerPartnerHr  = reserveRatePerHr / partners;
+    var annualEngineReserve  = reservePerPartnerHr * flightHrs;
+
+    // Leaseback
+    var leasebackCredit = 0;
+    if (isLeaseback) {
+      leasebackCredit = (schoolHrs * 65.0) / partners;
+    }
+
+    // Bottom line
+    var annualTotal   = annualLoan + totalFixed + annualVariable + annualEngineReserve - leasebackCredit;
+    var blendedHourly = annualTotal / Math.max(flightHrs, 1);
+
+    // Labels
+    var aircraftKey   = document.getElementById('aircraft-select').value;
+    var aircraftLabel = PROFILE_LABELS[aircraftKey] || 'Custom Aircraft';
+    var shareLabel    = partners === 1 ? 'Sole Owner' : '1/' + partners + ' Share';
+
+    // Populate
+    document.getElementById('res-aircraft-label').textContent = aircraftLabel + ' · ' + shareLabel + ' · ' + termYears + '-yr loan';
+    document.getElementById('res-hours-label').textContent    = 'Based on ' + flightHrs + ' personal flight hours/year';
+    document.getElementById('res-annual-total').textContent   = fmt(annualTotal);
+    document.getElementById('res-per-hour').textContent       = fmt(blendedHourly) + '/hr';
+
+    document.getElementById('res-principal').textContent    = fmt(principalShare);
+    document.getElementById('res-interest-rate').textContent = rateAnnual.toFixed(2) + '%' + (fairFloorApplied ? ' (25% down floor applied)' : '');
+    document.getElementById('res-down').textContent          = fmt(downShare) + (fairFloorApplied ? ' (adjusted to 25% min)' : '');
+    document.getElementById('res-tax').textContent           = fmt(taxShare);
+    document.getElementById('res-buffer').textContent        = fmt(bufferShare);
+    document.getElementById('res-closing-total').textContent = fmt(closingTotal);
+
+    document.getElementById('res-monthly').textContent       = fmt(monthlyPayment) + '/mo';
+    document.getElementById('res-annual-loan').textContent   = fmt(annualLoan);
+    document.getElementById('res-fixed-overhead').textContent= fmt(totalFixed);
+    document.getElementById('res-variable').textContent      = fmt(annualVariable);
+    document.getElementById('res-engine-reserve').textContent= fmt(annualEngineReserve);
+
+    if (isLeaseback) {
+      document.getElementById('res-leaseback-block').style.display   = 'block';
+      document.getElementById('res-school-hours').textContent         = schoolHrs + ' hrs';
+      document.getElementById('res-leaseback-credit').textContent     = '−' + fmt(leasebackCredit);
+      document.getElementById('res-bl-leaseback-row').style.display  = 'flex';
+      document.getElementById('res-bl-leaseback').textContent         = '−' + fmt(leasebackCredit);
+    } else {
+      document.getElementById('res-leaseback-block').style.display   = 'none';
+      document.getElementById('res-bl-leaseback-row').style.display  = 'none';
+    }
+
+    document.getElementById('res-bl-loan').textContent    = fmt(annualLoan);
+    document.getElementById('res-bl-fixed').textContent   = fmt(totalFixed);
+    document.getElementById('res-bl-variable').textContent= fmt(annualVariable);
+    document.getElementById('res-bl-engine').textContent  = fmt(annualEngineReserve);
+    document.getElementById('res-bl-annual').textContent  = fmt(annualTotal);
+    document.getElementById('res-bl-hourly').textContent  = fmt(blendedHourly) + '/hr';
+
+    // Swap views
+    document.getElementById('form-view').style.display    = 'none';
+    document.getElementById('results-view').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+
+  function showForm() {
+    document.getElementById('results-view').style.display = 'none';
+    document.getElementById('form-view').style.display    = 'block';
+    window.scrollTo(0, 0);
+  }
+</script>
+</body>
+</html>
+
