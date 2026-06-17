@@ -1,0 +1,886 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Boat Financial Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 16px;
+  line-height: 1.6;
+  padding: 32px 24px 64px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+h1.page-title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+p.page-subtitle {
+  font-size: 0.875rem;
+  color: #475569;
+  margin-bottom: 32px;
+}
+
+.card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.05);
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.field-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  letter-spacing: 0.01em;
+  margin-bottom: 7px;
+  display: block;
+}
+
+.field-note {
+  font-size: 0.775rem;
+  color: #94a3b8;
+  margin-top: 5px;
+  display: block;
+}
+
+.field-group {
+  margin-bottom: 20px;
+}
+
+.input-affix-wrap {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.input-affix-wrap:focus-within {
+  border-color: #1e40af;
+  box-shadow: 0 0 0 3px rgba(30,64,175,0.08);
+}
+
+.affix {
+  background: #eef3fb;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  border-right: 1px solid #cbd5e0;
+  flex-shrink: 0;
+}
+
+.affix.right {
+  border-right: none;
+  border-left: 1px solid #cbd5e0;
+}
+
+.field-input {
+  border: none;
+  outline: none;
+  padding: 11px 14px;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  color: #0f172a;
+  background: #ffffff;
+  width: 100%;
+  -moz-appearance: textfield;
+}
+
+.field-input::-webkit-outer-spin-button,
+.field-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+select.profile-select {
+  width: 100%;
+  padding: 11px 14px;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+}
+
+select.profile-select:focus {
+  border-color: #1e40af;
+  box-shadow: 0 0 0 3px rgba(30,64,175,0.08);
+}
+
+.profile-subtitle {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 7px;
+  display: block;
+  min-height: 18px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge {
+  padding: 8px 16px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e0;
+  color: #475569;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+  user-select: none;
+}
+
+.badge:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+}
+
+.badge.active {
+  background: #1e40af;
+  border-color: #1e40af;
+  color: #ffffff;
+}
+
+.btn-calculate {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  background: #1e40af;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background 0.18s;
+  margin-top: 8px;
+}
+
+.btn-calculate:hover { background: #1d4ed8; }
+.btn-calculate:active { background: #1e3a8a; }
+
+.alert-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+  display: none;
+}
+
+#view-form { display: block; }
+#view-results { display: none; }
+
+.print-brand {
+  display: none;
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.summary-banner {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.summary-metric {
+  flex: 1;
+  min-width: 200px;
+}
+
+.summary-metric-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1e40af;
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.summary-metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e40af;
+  line-height: 1.1;
+}
+
+.summary-metric-sub {
+  font-size: 0.78rem;
+  color: #3b82f6;
+  margin-top: 4px;
+}
+
+.result-block-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 16px;
+}
+
+.result-row:last-child { border-bottom: none; }
+
+.result-row-label {
+  font-size: 0.875rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.result-row-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+.result-row-value.highlight {
+  color: #1e40af;
+}
+
+.action-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-print {
+  flex: 1;
+  min-width: 160px;
+  padding: 13px 20px;
+  background: #1e40af;
+  color: #ffffff;
+  border: none;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.btn-print:hover { background: #1d4ed8; }
+
+.btn-recalc {
+  flex: 1;
+  min-width: 200px;
+  padding: 13px 20px;
+  background: #f1f5f9;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.btn-recalc:hover { background: #e0e7ef; }
+
+.divider { height: 1px; background: #e2e8f0; margin: 4px 0 20px; }
+
+@media (max-width: 600px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .summary-banner { flex-direction: column; gap: 20px; }
+  body { padding: 20px 16px 48px; }
+  .card { padding: 22px; }
+}
+
+@media print {
+  body { padding: 0; max-width: 100%; }
+  #view-form { display: none !important; }
+  #view-results { display: block !important; }
+  .print-brand { display: block !important; }
+  .action-row { display: none !important; }
+  .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+  .summary-banner { break-inside: avoid; }
+  h1.page-title, p.page-subtitle { display: none; }
+}
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Boat Financial Calculator</h1>
+<p class="page-subtitle">Calculate your true cost of boat ownership — from closing costs to daily outing expenses.</p>
+
+<div id="view-form">
+
+  <div class="card">
+    <div class="section-title">Section 1: Boat Profile &amp; Specifications</div>
+
+    <div class="field-group">
+      <label class="field-label" for="boat-profile">Select Boat Model / Profile</label>
+      <select class="profile-select" id="boat-profile">
+        <option value="">— Choose a profile —</option>
+        <option value="dinghy">Dinghy</option>
+        <option value="jonboat">Jon Boat</option>
+        <option value="skiff">Skiff</option>
+        <option value="runabout">Runabout</option>
+        <option value="yacht">Yacht</option>
+        <option value="custom">Custom / Other Boat</option>
+      </select>
+      <span class="profile-subtitle" id="profile-subtitle"></span>
+    </div>
+
+    <div class="grid-2">
+      <div class="field-group">
+        <label class="field-label" for="purchase-price">Boat Purchase Price</label>
+        <div class="input-affix-wrap">
+          <span class="affix">$</span>
+          <input class="field-input" type="number" id="purchase-price" placeholder="0" min="0" />
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="down-payment">Down Payment Amount</label>
+        <div class="input-affix-wrap">
+          <span class="affix">$</span>
+          <input class="field-input" type="number" id="down-payment" placeholder="0" min="0" />
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="field-group">
+        <label class="field-label" for="fuel-gph">Fuel Burn Rate</label>
+        <div class="input-affix-wrap">
+          <input class="field-input" type="number" id="fuel-gph" placeholder="0" min="0" step="0.1" />
+          <span class="affix right">GPH</span>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="maintenance">Annual Engine &amp; Routine Maintenance Fund</label>
+        <div class="input-affix-wrap">
+          <span class="affix">$</span>
+          <input class="field-input" type="number" id="maintenance" placeholder="0" min="0" />
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="paint-reserve">Annual Hull Paint Reserve</label>
+        <div class="input-affix-wrap">
+          <span class="affix">$</span>
+          <input class="field-input" type="number" id="paint-reserve" placeholder="0" min="0" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Section 2: Co-Op Shares &amp; Loan Financing</div>
+
+    <div class="field-group">
+      <label class="field-label">Partnership Ownership Split</label>
+      <div class="badge-group" id="badges-share">
+        <div class="badge active" data-value="1">Sole Owner</div>
+        <div class="badge" data-value="2">1/2 Share</div>
+        <div class="badge" data-value="3">1/3 Share</div>
+        <div class="badge" data-value="4">1/4 Share</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Credit Profile</label>
+      <div class="badge-group" id="badges-credit">
+        <div class="badge active" data-value="excellent">Excellent (7.25%)</div>
+        <div class="badge" data-value="good">Good (8.50%)</div>
+        <div class="badge" data-value="fair">Fair (10.50%)</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Loan Term</label>
+      <div class="badge-group" id="badges-term">
+        <div class="badge active" data-value="5">5 Years</div>
+        <div class="badge" data-value="10">10 Years</div>
+        <div class="badge" data-value="15">15 Years</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="sales-tax">State Sales / Use Tax Rate</label>
+      <div class="input-affix-wrap" style="max-width: 200px;">
+        <input class="field-input" type="number" id="sales-tax" placeholder="0" min="0" max="20" step="0.01" />
+        <span class="affix right">%</span>
+      </div>
+      <span class="field-note">Note: Check your local state laws, as marine registration taxes fluctuate by county.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Section 3: Storage &amp; Fixed Overhead Suite</div>
+
+    <div class="field-group">
+      <label class="field-label">Storage Type</label>
+      <div class="badge-group" id="badges-storage">
+        <div class="badge active" data-value="trailer">Trailer &amp; Tow Gear ($0/yr)</div>
+        <div class="badge" data-value="2400">Dry Stack Valet ($2,400/yr)</div>
+        <div class="badge" data-value="4500">Marina Wet Slip ($4,500/yr)</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Seasonal Climate Winterization</label>
+      <div class="badge-group" id="badges-winter">
+        <div class="badge active" data-value="0">Warm Climate / No Winterization</div>
+        <div class="badge" data-value="1200">Cold Climate — Winterize &amp; Wrap (+$1,200/yr)</div>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="field-group">
+        <label class="field-label" for="insurance">Annual Marine Insurance Premium</label>
+        <div class="input-affix-wrap">
+          <span class="affix">$</span>
+          <input class="field-input" type="number" id="insurance" placeholder="0" min="0" />
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="survey">Base Hull Survey / Registration Fees</label>
+        <div class="input-affix-wrap">
+          <span class="affix">$</span>
+          <input class="field-input" type="number" id="survey" placeholder="0" min="0" />
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="accessories">Miscellaneous Accessories Budget</label>
+        <div class="input-affix-wrap">
+          <span class="affix">$</span>
+          <input class="field-input" type="number" id="accessories" placeholder="0" min="0" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Section 4: Water Utilization</div>
+
+    <div class="grid-3">
+      <div class="field-group">
+        <label class="field-label" for="outing-days">Planned Outing Days / Year</label>
+        <div class="input-affix-wrap">
+          <input class="field-input" type="number" id="outing-days" placeholder="0" min="0" />
+          <span class="affix right">days</span>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="run-hours">Avg Engine Run Time / Outing</label>
+        <div class="input-affix-wrap">
+          <input class="field-input" type="number" id="run-hours" placeholder="0" min="0" step="0.5" />
+          <span class="affix right">hrs</span>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="fuel-price">Avg Marine Fuel Cost / Gallon</label>
+        <div class="input-affix-wrap">
+          <span class="affix">$</span>
+          <input class="field-input" type="number" id="fuel-price" placeholder="0" min="0" step="0.01" />
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Leaseback / Charter Revenue Credit (Annual, Optional)</label>
+      <div class="input-affix-wrap" style="max-width: 260px;">
+        <span class="affix">$</span>
+        <input class="field-input" type="number" id="leaseback" placeholder="0" min="0" />
+      </div>
+    </div>
+
+    <div id="alert-error" class="alert-error"></div>
+
+    <div class="field-group" style="margin-bottom:0;">
+      <button class="btn-calculate" id="btn-calculate" type="button">Calculate Costs</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="view-results">
+  <div class="print-brand">calcsmadesimple.com | Boat Financial Asset Projection Summary</div>
+
+  <div class="summary-banner" id="summary-banner">
+    <div class="summary-metric">
+      <div class="summary-metric-label">Total Out-of-Pocket Cost Per Year</div>
+      <div class="summary-metric-value" id="res-annual-total">—</div>
+      <div class="summary-metric-sub">Annual operating burden (loan + overhead + fuel)</div>
+    </div>
+    <div class="summary-metric">
+      <div class="summary-metric-label">True Blended Cost Per Outing Day</div>
+      <div class="summary-metric-value" id="res-daily-cost">—</div>
+      <div class="summary-metric-sub">Based on your planned days on the water</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="result-block-title">Block A — Capital Needed at Closing</div>
+
+    <div class="result-row">
+      <span class="result-row-label">Your Share of Boat Principal (Financed Amount)</span>
+      <span class="result-row-value" id="res-principal">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">Total Interest Paid Over Loan Life (Your Share)</span>
+      <span class="result-row-value" id="res-total-interest">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">Your Share of State Sales / Use Tax</span>
+      <span class="result-row-value" id="res-tax-share">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">True Out-of-Pocket Cash Needed at Closing</span>
+      <span class="result-row-value highlight" id="res-closing-cash">—</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="result-block-title">Block B — Ongoing Operating Obligations</div>
+
+    <div class="result-row">
+      <span class="result-row-label">Your Share of Monthly Loan Payment</span>
+      <span class="result-row-value" id="res-monthly-payment">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">Fixed Annual Overhead (Storage + Insurance + Survey)</span>
+      <span class="result-row-value" id="res-fixed-overhead">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">Trailer Upkeep Surcharge — Tires, Bearings, Winch &amp; Hitch (Your Share)</span>
+      <span class="result-row-value" id="res-trailer-maint">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">Climate Winterization Costs (Annual)</span>
+      <span class="result-row-value" id="res-winter-cost">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">Annual Maintenance &amp; Paint Reserve Surcharges</span>
+      <span class="result-row-value" id="res-maintenance-total">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">Annual Accessories Budget (Your Share)</span>
+      <span class="result-row-value" id="res-accessories-share">—</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="result-block-title">Block C — Direct Operating Expenses</div>
+
+    <div class="result-row">
+      <span class="result-row-label">Annual Raw Fuel Cost (GPH × Price × Days × Run Time)</span>
+      <span class="result-row-value" id="res-fuel-raw">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">Marine Oil / Consumable Buffer ($3.00/hr)</span>
+      <span class="result-row-value" id="res-oil-buffer">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">Total Annual Fuel &amp; Consumables</span>
+      <span class="result-row-value highlight" id="res-fuel-total">—</span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">Annual Leaseback / Charter Revenue Credit</span>
+      <span class="result-row-value" id="res-leaseback-credit">—</span>
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="btn-print" id="btn-print" type="button">Print Results</button>
+    <button class="btn-recalc" id="btn-recalc" type="button">Adjust Variables &amp; Recalculate</button>
+  </div>
+</div>
+
+<script>
+(function() {
+
+  var PROFILES = {
+    dinghy:   { price: 3500,   down: 3500,  gph: 0.8,  maintenance: 150,  paint: 0,    insurance: 120,  survey: 0,   accessories: 200  },
+    jonboat:  { price: 8500,   down: 2000,  gph: 2.0,  maintenance: 400,  paint: 0,    insurance: 250,  survey: 0,   accessories: 500  },
+    skiff:    { price: 35000,  down: 7000,  gph: 6.5,  maintenance: 1200, paint: 400,  insurance: 800,  survey: 150, accessories: 1200 },
+    runabout: { price: 65000,  down: 13000, gph: 11.0, maintenance: 2200, paint: 600,  insurance: 1400, survey: 250, accessories: 2000 },
+    yacht:    { price: 285000, down: 70000, gph: 22.0, maintenance: 6500, paint: 1800, insurance: 3800, survey: 900, accessories: 5000 }
+  };
+
+  var CREDIT_RATES = { excellent: 7.25, good: 8.50, fair: 10.50 };
+
+  function getActiveBadge(groupId) {
+    var group = document.getElementById(groupId);
+    var active = group ? group.querySelector('.badge.active') : null;
+    return active ? active.getAttribute('data-value') : null;
+  }
+
+  function setupBadgeGroup(groupId) {
+    var group = document.getElementById(groupId);
+    if (!group) return;
+    var badges = group.querySelectorAll('.badge');
+    badges.forEach(function(badge) {
+      badge.addEventListener('click', function() {
+        badges.forEach(function(b) { b.classList.remove('active'); });
+        badge.classList.add('active');
+      });
+    });
+  }
+
+  setupBadgeGroup('badges-share');
+  setupBadgeGroup('badges-credit');
+  setupBadgeGroup('badges-term');
+  setupBadgeGroup('badges-storage');
+  setupBadgeGroup('badges-winter');
+
+  var profileSelect = document.getElementById('boat-profile');
+  var profileSubtitle = document.getElementById('profile-subtitle');
+
+  profileSelect.addEventListener('change', function() {
+    var val = this.value;
+    if (val === 'custom') {
+      document.getElementById('purchase-price').value = '';
+      document.getElementById('down-payment').value = '';
+      document.getElementById('fuel-gph').value = '';
+      document.getElementById('maintenance').value = '';
+      document.getElementById('paint-reserve').value = '';
+      document.getElementById('insurance').value = '';
+      document.getElementById('survey').value = '';
+      document.getElementById('accessories').value = '';
+      profileSubtitle.textContent = 'User-Entered Custom Data';
+    } else if (val && PROFILES[val]) {
+      var p = PROFILES[val];
+      document.getElementById('purchase-price').value = p.price;
+      document.getElementById('down-payment').value = p.down;
+      document.getElementById('fuel-gph').value = p.gph;
+      document.getElementById('maintenance').value = p.maintenance;
+      document.getElementById('paint-reserve').value = p.paint;
+      document.getElementById('insurance').value = p.insurance;
+      document.getElementById('survey').value = p.survey;
+      document.getElementById('accessories').value = p.accessories;
+      profileSubtitle.textContent = '';
+    } else {
+      profileSubtitle.textContent = '';
+    }
+  });
+
+  function fmt(n) {
+    if (isNaN(n) || n === null || n === undefined) return '$0.00';
+    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function calcAmortization(principal, annualRatePct, termYears) {
+    if (principal <= 0) return 0;
+    if (annualRatePct <= 0) return principal / (termYears * 12);
+    var r = annualRatePct / 100 / 12;
+    var n = termYears * 12;
+    var powered = Math.pow(1 + r, n);
+    return principal * (r * powered) / (powered - 1);
+  }
+
+  function showAlert(msg) {
+    var el = document.getElementById('alert-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function hideAlert() {
+    var el = document.getElementById('alert-error');
+    el.style.display = 'none';
+    el.textContent = '';
+  }
+
+  document.getElementById('btn-calculate').addEventListener('click', function() {
+    hideAlert();
+
+    var purchasePrice = parseFloat(document.getElementById('purchase-price').value) || 0;
+    var downPayment   = parseFloat(document.getElementById('down-payment').value) || 0;
+    var fuelGPH       = parseFloat(document.getElementById('fuel-gph').value) || 0;
+    var maintenance   = parseFloat(document.getElementById('maintenance').value) || 0;
+    var paintReserve  = parseFloat(document.getElementById('paint-reserve').value) || 0;
+    var insurance     = parseFloat(document.getElementById('insurance').value) || 0;
+    var survey        = parseFloat(document.getElementById('survey').value) || 0;
+    var accessories   = parseFloat(document.getElementById('accessories').value) || 0;
+    var salesTaxPct   = parseFloat(document.getElementById('sales-tax').value) || 0;
+    var outingDays    = parseFloat(document.getElementById('outing-days').value) || 0;
+    var runHours      = parseFloat(document.getElementById('run-hours').value) || 0;
+    var fuelPrice     = parseFloat(document.getElementById('fuel-price').value) || 0;
+    var leaseback     = parseFloat(document.getElementById('leaseback').value) || 0;
+
+    var shareDiv  = parseInt(getActiveBadge('badges-share')) || 1;
+    var creditKey = getActiveBadge('badges-credit') || 'excellent';
+    var termYears = parseInt(getActiveBadge('badges-term')) || 5;
+    var storageRaw  = getActiveBadge('badges-storage');
+    var isTrailer   = storageRaw === 'trailer';
+    var storageCost = isTrailer ? 0 : (parseFloat(storageRaw) || 0);
+    var trailerMaintenance = isTrailer ? 350 : 0;
+    var winterCost  = parseFloat(getActiveBadge('badges-winter')) || 0;
+
+    var profileVal = profileSelect.value;
+
+    if (!profileVal) {
+      showAlert('Please select a boat profile or choose Custom / Other Boat and populate the fields before calculating.');
+      return;
+    }
+
+    if (purchasePrice <= 0) {
+      showAlert('Please enter a valid boat purchase price before calculating.');
+      return;
+    }
+
+    if (outingDays <= 0) {
+      showAlert('Please enter your planned outing days per year to calculate a blended daily cost.');
+      return;
+    }
+
+    var annualRatePct = CREDIT_RATES[creditKey];
+
+    if (creditKey === 'fair') {
+      var minDown = purchasePrice * 0.25;
+      if (downPayment < minDown) {
+        showAlert('Fair credit profile requires a minimum 25% down payment. For this boat, the minimum down payment is ' + fmt(minDown) + '.');
+        return;
+      }
+    }
+
+    var salesTaxAmount    = purchasePrice * (salesTaxPct / 100);
+    var totalPurchaseCost = purchasePrice + salesTaxAmount;
+    var loanPrincipal     = Math.max(0, purchasePrice - downPayment);
+
+    var shareDownPayment    = downPayment / shareDiv;
+    var shareLoanPrincipal  = loanPrincipal / shareDiv;
+    var shareTax            = salesTaxAmount / shareDiv;
+
+    var monthlyPaymentFull  = calcAmortization(loanPrincipal, annualRatePct, termYears);
+    var monthlyPaymentShare = monthlyPaymentFull / shareDiv;
+    var annualLoanShare     = monthlyPaymentShare * 12;
+
+    var totalPaidFull   = monthlyPaymentFull * termYears * 12;
+    var totalInterestFull = totalPaidFull - loanPrincipal;
+    var shareInterest   = totalInterestFull / shareDiv;
+
+    var closingCash = shareDownPayment + shareTax + 500;
+
+    var sharedInsurance  = insurance / shareDiv;
+    var sharedSurvey     = survey / shareDiv;
+    var sharedStorage    = storageCost / shareDiv;
+    var sharedTrailerMaint = trailerMaintenance / shareDiv;
+    var fixedAnnualOverhead = sharedStorage + sharedInsurance + sharedSurvey + sharedTrailerMaint;
+
+    var sharedWinter     = winterCost / shareDiv;
+    var sharedMaintenance = (maintenance + paintReserve) / shareDiv;
+    var sharedAccessories = accessories / shareDiv;
+
+    var totalEngineHours = outingDays * runHours;
+    var fuelRaw          = totalEngineHours * fuelGPH * fuelPrice;
+    var oilBuffer        = 3.00 * totalEngineHours;
+    var totalFuel        = fuelRaw + oilBuffer;
+
+    var shareLeasebackCredit = leaseback / shareDiv;
+
+    var annualTotal = annualLoanShare + fixedAnnualOverhead + sharedWinter + sharedMaintenance + sharedAccessories + totalFuel - shareLeasebackCredit;
+    var blendedDaily = annualTotal / Math.max(outingDays, 1);
+
+    document.getElementById('res-annual-total').textContent = fmt(annualTotal);
+    document.getElementById('res-daily-cost').textContent   = fmt(blendedDaily);
+
+    document.getElementById('res-principal').textContent        = fmt(shareLoanPrincipal);
+    document.getElementById('res-total-interest').textContent   = fmt(shareInterest);
+    document.getElementById('res-tax-share').textContent        = fmt(shareTax);
+    document.getElementById('res-closing-cash').textContent     = fmt(closingCash);
+
+    document.getElementById('res-monthly-payment').textContent  = fmt(monthlyPaymentShare);
+    document.getElementById('res-fixed-overhead').textContent   = fmt(fixedAnnualOverhead);
+    document.getElementById('res-trailer-maint').textContent    = isTrailer ? fmt(sharedTrailerMaint) : 'N/A — Non-trailer storage';
+    document.getElementById('res-winter-cost').textContent      = fmt(sharedWinter);
+    document.getElementById('res-maintenance-total').textContent = fmt(sharedMaintenance);
+    document.getElementById('res-accessories-share').textContent = fmt(sharedAccessories);
+
+    document.getElementById('res-fuel-raw').textContent         = fmt(fuelRaw);
+    document.getElementById('res-oil-buffer').textContent       = fmt(oilBuffer);
+    document.getElementById('res-fuel-total').textContent       = fmt(totalFuel);
+    document.getElementById('res-leaseback-credit').textContent = '(' + fmt(shareLeasebackCredit) + ')';
+
+    document.getElementById('view-form').style.display    = 'none';
+    document.getElementById('view-results').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  });
+
+  document.getElementById('btn-print').addEventListener('click', function() {
+    window.print();
+  });
+
+  document.getElementById('btn-recalc').addEventListener('click', function() {
+    document.getElementById('view-results').style.display = 'none';
+    document.getElementById('view-form').style.display    = 'block';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  });
+
+})();
+</script>
+</body>
+</html>
