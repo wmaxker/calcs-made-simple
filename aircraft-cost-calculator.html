@@ -70,7 +70,7 @@
   }
   .field-note {
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: #475569;
     margin-top: 5px;
     font-weight: 400;
   }
@@ -302,9 +302,9 @@
   }
   .summary-metric .metric-sub {
     font-size: 0.78rem;
-    color: #60a5fa;
+    color: #1e3a8a;
     margin-top: 4px;
-    font-weight: 500;
+    font-weight: 600;
   }
 
   .result-block {
@@ -339,7 +339,7 @@
   }
   .rr-note {
     font-size: 0.73rem;
-    color: #94a3b8;
+    color: #0f172a;
     margin-top: 2px;
     font-weight: 400;
   }
@@ -390,6 +390,9 @@
   @media print {
     body { font-size: 12px; background: #fff; }
     .page-header, #form-view, .action-row, .no-print { display: none !important; }
+    #drawer-toggle { display: none !important; }
+    #detailed-metrics-drawer[style*="display: none"],
+    #detailed-metrics-drawer[style*="display:none"] { display: none !important; }
     .print-brand { display: block !important; }
     #results-view { display: block !important; }
     .summary-banner { background: #f0f4ff; border: 1px solid #c7d7fc; }
@@ -429,8 +432,8 @@
           <option value="pa28c">Piper PA-28 Cherokee</option>
           <option value="pa28a">Piper PA-28 Archer</option>
           <option value="grumman">Grumman AA-5 Series</option>
-          <option value="da40">Diamond DA40</option>
-          <option value="sr22">Cirrus SR22</option>
+          <option value="j3cub">J3 Piper Cub</option>
+          <option value="achamp">Aeronca Champ</option>
           <option value="bonanza">Beechcraft Bonanza</option>
           <option value="custom">Custom / Other Aircraft</option>
         </select>
@@ -630,98 +633,13 @@
         <div class="metric-sub" id="res-aircraft-label">—</div>
       </div>
       <div class="summary-metric">
-        <div class="metric-label">True Blended Cost Per Flight Hour</div>
+        <div class="metric-label">Blended Cost Per Flight Hour</div>
         <div class="metric-value" id="res-per-hour">—</div>
         <div class="metric-sub" id="res-hours-label">—</div>
       </div>
     </div>
 
-    <!-- Block A -->
-    <div class="result-block">
-      <div class="result-block-title">Capital Needed at Closing</div>
-
-      <div class="result-row">
-        <div class="rr-label">Your Share of Loan Principal</div>
-        <div class="rr-value" id="res-principal">—</div>
-      </div>
-      <div class="result-row">
-        <div class="rr-label">Interest Rate Applied</div>
-        <div class="rr-value" id="res-interest-rate">—</div>
-      </div>
-      <div class="result-row">
-        <div class="rr-label">Your Share of Down Payment</div>
-        <div class="rr-value" id="res-down">—</div>
-      </div>
-      <div class="result-row">
-        <div class="rr-label">State / Use Tax on Your Share</div>
-        <div class="rr-value" id="res-tax">—</div>
-      </div>
-      <div class="result-row">
-        <div>
-          <div class="rr-label">Acquisition / Escrow Buffer</div>
-          <div class="rr-note">$1,500 total divided by partner count</div>
-        </div>
-        <div class="rr-value" id="res-buffer">—</div>
-      </div>
-      <div class="result-row highlight-row">
-        <div class="rr-label" style="font-weight:700; color:#1e40af;">True Cash Needed at Closing</div>
-        <div class="rr-value" style="color:#1e40af;" id="res-closing-total">—</div>
-      </div>
-    </div>
-
-    <!-- Block B -->
-    <div class="result-block">
-      <div class="result-block-title">Ongoing Operating Obligations</div>
-
-      <div class="result-row">
-        <div class="rr-label">Monthly Loan Payment (Your Share)</div>
-        <div class="rr-value" id="res-monthly">—</div>
-      </div>
-      <div class="result-row">
-        <div class="rr-label">Annual Loan Payments Total</div>
-        <div class="rr-value" id="res-annual-loan">—</div>
-      </div>
-      <div class="result-row">
-        <div>
-          <div class="rr-label">Shared Fixed Annual Overhead</div>
-          <div class="rr-note">Hangar + Inspection + Insurance + Avionics fund, divided by partners</div>
-        </div>
-        <div class="rr-value" id="res-fixed-overhead">—</div>
-      </div>
-      <div class="result-row">
-        <div>
-          <div class="rr-label">Annual Direct Variable Expenses</div>
-          <div class="rr-note">Fuel burn + $4.50/hr oil consumables × personal flight hours</div>
-        </div>
-        <div class="rr-value" id="res-variable">—</div>
-      </div>
-      <div class="result-row">
-        <div>
-          <div class="rr-label">Annual Engine Reserve (Your Share)</div>
-          <div class="rr-note">Overhaul cost ÷ max(TBO − SMOH, 50 hrs) ÷ partners × personal hours</div>
-        </div>
-        <div class="rr-value" id="res-engine-reserve">—</div>
-      </div>
-    </div>
-
-    <!-- Block C (leaseback) -->
-    <div class="result-block" id="res-leaseback-block" style="display:none;">
-      <div class="result-block-title">Revenue Retention — Flight School Leaseback</div>
-      <div class="result-row">
-        <div class="rr-label">School Usage Hours / Year</div>
-        <div class="rr-value" id="res-school-hours">—</div>
-      </div>
-      <div class="result-row">
-        <div class="rr-label">Net Leaseback Credit Rate</div>
-        <div class="rr-value">$65.00 / hr</div>
-      </div>
-      <div class="result-row">
-        <div class="rr-label">Your Share of Annual Leaseback Revenue</div>
-        <div class="rr-value credit" id="res-leaseback-credit">—</div>
-      </div>
-    </div>
-
-    <!-- Bottom line -->
+    <!-- Bottom line — always visible primary snapshot -->
     <div class="result-block" style="border: 1px solid #bfdbfe; background: #eff6ff;">
       <div class="result-block-title" style="color:#1e40af; border-color: #bfdbfe;">Ownership Bottom Line</div>
 
@@ -750,10 +668,104 @@
         <div class="rr-value" style="font-size:1.2rem; color:#1e40af;" id="res-bl-annual">—</div>
       </div>
       <div class="result-row" style="border-bottom:none; padding-top:6px;">
-        <div class="rr-label" style="font-size:1rem; font-weight:700; color:#1e40af;">True Blended Cost Per Flight Hour</div>
+        <div class="rr-label" style="font-size:1rem; font-weight:700; color:#1e40af;">Blended Cost Per Flight Hour</div>
         <div class="rr-value" style="font-size:1.2rem; color:#1e40af;" id="res-bl-hourly">—</div>
       </div>
     </div>
+
+    <!-- Accordion drawer toggle -->
+    <button type="button" id="drawer-toggle" class="btn-secondary" style="width: 100%; margin: 12px 0; text-align: center;" onclick="toggleDetailDrawer()">View Detailed Closing &amp; Breakdown Metrics</button>
+
+    <!-- Secondary detail drawer — collapsed by default -->
+    <div id="detailed-metrics-drawer" style="display: none;">
+
+      <!-- Block A -->
+      <div class="result-block">
+        <div class="result-block-title">Capital Needed at Closing</div>
+
+        <div class="result-row">
+          <div class="rr-label">Your Share of Loan Principal</div>
+          <div class="rr-value" id="res-principal">—</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">Interest Rate Applied</div>
+          <div class="rr-value" id="res-interest-rate">—</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">Your Share of Down Payment</div>
+          <div class="rr-value" id="res-down">—</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">State / Use Tax on Your Share</div>
+          <div class="rr-value" id="res-tax">—</div>
+        </div>
+        <div class="result-row">
+          <div>
+            <div class="rr-label">Acquisition / Escrow Buffer</div>
+            <div class="rr-note">$1,500 total divided by partner count</div>
+          </div>
+          <div class="rr-value" id="res-buffer">—</div>
+        </div>
+        <div class="result-row highlight-row">
+          <div class="rr-label" style="font-weight:700; color:#1e40af;">Cash Needed at Closing</div>
+          <div class="rr-value" style="color:#1e40af;" id="res-closing-total">—</div>
+        </div>
+      </div>
+
+      <!-- Block B -->
+      <div class="result-block">
+        <div class="result-block-title">Ongoing Operating Obligations</div>
+
+        <div class="result-row">
+          <div class="rr-label">Monthly Loan Payment (Your Share)</div>
+          <div class="rr-value" id="res-monthly">—</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">Annual Loan Payments Total</div>
+          <div class="rr-value" id="res-annual-loan">—</div>
+        </div>
+        <div class="result-row">
+          <div>
+            <div class="rr-label">Shared Fixed Annual Overhead</div>
+            <div class="rr-note">Hangar + Inspection + Insurance + Avionics fund, divided by partners</div>
+          </div>
+          <div class="rr-value" id="res-fixed-overhead">—</div>
+        </div>
+        <div class="result-row">
+          <div>
+            <div class="rr-label">Annual Direct Variable Expenses</div>
+            <div class="rr-note">Fuel burn + $4.50/hr oil consumables × personal flight hours</div>
+          </div>
+          <div class="rr-value" id="res-variable">—</div>
+        </div>
+        <div class="result-row">
+          <div>
+            <div class="rr-label">Annual Engine Reserve (Your Share)</div>
+            <div class="rr-note">Overhaul cost ÷ max(TBO − SMOH, 50 hrs) ÷ partners × personal hours</div>
+          </div>
+          <div class="rr-value" id="res-engine-reserve">—</div>
+        </div>
+      </div>
+
+      <!-- Block C (leaseback) -->
+      <div class="result-block" id="res-leaseback-block" style="display:none;">
+        <div class="result-block-title">Revenue Retention — Flight School Leaseback</div>
+        <div class="result-row">
+          <div class="rr-label">School Usage Hours / Year</div>
+          <div class="rr-value" id="res-school-hours">—</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">Net Leaseback Credit Rate</div>
+          <div class="rr-value">$65.00 / hr</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">Your Share of Annual Leaseback Revenue</div>
+          <div class="rr-value credit" id="res-leaseback-credit">—</div>
+        </div>
+      </div>
+
+    </div>
+    <!-- END detailed-metrics-drawer -->
 
     <div class="action-row no-print">
       <button class="btn-primary" onclick="window.print()">Print Results</button>
@@ -773,15 +785,15 @@
     pa28c:   { price: 85000,  down: 18000, gph: 8.2,  tbo: 2000, smoh: 1100, overhaul: 35000, hangar: 3600,  annual: 2500, ins: 1900 },
     pa28a:   { price: 155000, down: 35000, gph: 9.0,  tbo: 2000, smoh: 950,  overhaul: 38000, hangar: 3600,  annual: 2900, ins: 2400 },
     grumman: { price: 95000,  down: 20000, gph: 8.5,  tbo: 2000, smoh: 1250, overhaul: 36000, hangar: 3600,  annual: 2600, ins: 2100 },
-    da40:    { price: 215000, down: 50000, gph: 5.5,  tbo: 1800, smoh: 600,  overhaul: 42000, hangar: 4200,  annual: 3100, ins: 2800 },
-    sr22:    { price: 365000, down: 90000, gph: 16.0, tbo: 2000, smoh: 1100, overhaul: 55000, hangar: 5400,  annual: 4500, ins: 4600 },
+    j3cub:   { price: 40000,  down: 8000,  gph: 4.5,  tbo: 2000, smoh: 800,  overhaul: 18000, hangar: 2400,  annual: 1600, ins: 1100 },
+    achamp:  { price: 38000,  down: 7500,  gph: 5.0,  tbo: 1800, smoh: 700,  overhaul: 18000, hangar: 2400,  annual: 1500, ins: 1100 },
     bonanza: { price: 245000, down: 60000, gph: 14.5, tbo: 1700, smoh: 700,  overhaul: 55000, hangar: 4800,  annual: 4500, ins: 4200 }
   };
 
   var PROFILE_LABELS = {
     c150: 'Cessna 150/152', c172: 'Cessna 172 Skyhawk', c182: 'Cessna 182 Skylane',
     pa28c: 'Piper PA-28 Cherokee', pa28a: 'Piper PA-28 Archer', grumman: 'Grumman AA-5 Series',
-    da40: 'Diamond DA40', sr22: 'Cirrus SR22', bonanza: 'Beechcraft Bonanza', custom: 'Custom Aircraft'
+    j3cub: 'J3 Piper Cub', achamp: 'Aeronca Champ', bonanza: 'Beechcraft Bonanza', custom: 'Custom Aircraft'
   };
 
   function fmt(n) {
@@ -991,6 +1003,18 @@
     window.scrollTo(0, 0);
   }
 
+  function toggleDetailDrawer() {
+    var drawer = document.getElementById('detailed-metrics-drawer');
+    var btn    = document.getElementById('drawer-toggle');
+    if (drawer.style.display === 'none' || drawer.style.display === '') {
+      drawer.style.display = 'block';
+      btn.textContent = 'Hide Detailed Closing \u0026 Breakdown Metrics';
+    } else {
+      drawer.style.display = 'none';
+      btn.textContent = 'View Detailed Closing \u0026 Breakdown Metrics';
+    }
+  }
+
   function showForm() {
     document.getElementById('results-view').style.display = 'none';
     document.getElementById('form-view').style.display    = 'block';
@@ -999,4 +1023,3 @@
 </script>
 </body>
 </html>
-
