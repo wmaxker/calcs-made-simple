@@ -404,40 +404,23 @@
 </head>
 <body>
 
-<div class="page-header no-print">
-  <h1>Aircraft Ownership Cost Calculator</h1>
-  <p>Private pilot acquisition, financing, and annual operating projections</p>
-</div>
-
 <div class="main-container">
+
+  <div style="padding: 32px 0 8px;">
+    <h1 style="font-size: 1.55rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; margin-bottom: 4px;">Aircraft Ownership Cost Calculator</h1>
+    <p style="font-size: 0.9rem; color: #475569; font-weight: 400;">Private pilot acquisition, financing, and annual operating costs</p>
+  </div>
 
   <!-- FORM VIEW -->
   <div id="form-view">
 
     <div class="alert-box" id="alert-box">
-      Please select an aircraft from the dropdown, or fill in all physical specification fields (price, fuel burn, TBO, overhaul cost) before calculating.
+      Please fill in all physical specification fields (Purchase Price, Fuel Burn Rate, Engine TBO Limit, and Estimated Overhaul Cost) before calculating.
     </div>
 
     <!-- SECTION 1 -->
     <div class="card">
-      <div class="section-title">Aircraft Profile &amp; Specifications</div>
-
-      <div class="field-group">
-        <label class="field-label" for="aircraft-select">Aircraft Model</label>
-        <select class="styled-select" id="aircraft-select" onchange="applyProfile()">
-          <option value="">— Select a model to auto-fill specs —</option>
-          <option value="c150">Cessna 150/152</option>
-          <option value="c172">Cessna 172 Skyhawk</option>
-          <option value="c182">Cessna 182 Skylane</option>
-          <option value="pa28c">Piper PA-28 Cherokee</option>
-          <option value="pa28a">Piper PA-28 Archer</option>
-          <option value="grumman">Grumman AA-5 Series</option>
-          <option value="j3cub">J3 Piper Cub</option>
-          <option value="achamp">Aeronca Champ</option>
-          <option value="bonanza">Beechcraft Bonanza</option>
-          <option value="custom">Custom / Other Aircraft</option>
-        </select>
-      </div>
+      <div class="section-title">Aircraft Specifications</div>
 
       <div class="specs-grid">
         <div class="field-group">
@@ -487,7 +470,7 @@
 
     <!-- SECTION 2 -->
     <div class="card">
-      <div class="section-title">Co-op Shares &amp; Loan Financing</div>
+      <div class="section-title">Ownership &amp; Loan Financing</div>
 
       <div class="field-group">
         <label class="field-label">Partnership Share</label>
@@ -499,15 +482,23 @@
         </div>
       </div>
 
-      <div class="field-group" style="margin-top:22px;">
-        <label class="field-label">Credit Profile</label>
-        <div class="badge-group" id="credit-group">
-          <span class="badge active" data-value="7.25" onclick="selectBadge('credit-group', this)">Excellent — 7.25%</span>
-          <span class="badge" data-value="8.50" onclick="selectBadge('credit-group', this)">Good — 8.50%</span>
-          <span class="badge" data-value="10.50" data-fair="true" onclick="selectBadge('credit-group', this)">Fair — 10.50%</span>
+      <div class="specs-grid" style="margin-top:22px;">
+        <div class="field-group">
+          <label class="field-label">FICO Credit Score</label>
+          <div class="input-wrapper">
+            <input type="number" id="credit-score" placeholder="720" min="300" max="850" step="1" oninput="checkCreditScore()">
+            <span class="input-affix suffix">FICO</span>
+          </div>
+          <div class="warning-strip" id="fair-warning">
+            Scores below 640 typically require a minimum 25% down payment. The calculation will enforce the 25% floor if your entered down payment falls short.
+          </div>
         </div>
-        <div class="warning-strip" id="fair-warning">
-          Fair credit requires a minimum 25% down payment. The calculation will use the 25% floor value if your entered down payment falls short.
+        <div class="field-group">
+          <label class="field-label">Loan Interest Rate</label>
+          <div class="input-wrapper">
+            <input type="number" id="interest-rate" placeholder="7.50" min="0" max="30" step="0.01">
+            <span class="input-affix suffix">%</span>
+          </div>
         </div>
       </div>
 
@@ -532,26 +523,17 @@
 
     <!-- SECTION 3 -->
     <div class="card">
-      <div class="section-title">Storage &amp; Fixed Overhead Fees</div>
+      <div class="section-title">Storage &amp; Fixed Fees</div>
 
       <div class="field-group">
-        <label class="field-label">Landing Gear Configuration</label>
-        <div class="badge-group" id="gear-group">
-          <span class="badge active" data-value="fixed" onclick="selectBadge('gear-group', this)">Fixed Gear</span>
-          <span class="badge" data-value="retractable" onclick="selectBadge('gear-group', this)">Retractable Complex (+$1,000 ins / +$500 annual)</span>
-        </div>
-      </div>
-
-      <div class="field-group" style="margin-top:22px;">
         <label class="field-label">Avionics / Tech Upgrade Annual Fund</label>
-        <div class="badge-group" id="avionics-group">
-          <span class="badge active" data-value="0" onclick="selectBadge('avionics-group', this)">$0 — Legacy</span>
-          <span class="badge" data-value="1000" onclick="selectBadge('avionics-group', this)">$1,000 — Mid</span>
-          <span class="badge" data-value="2500" onclick="selectBadge('avionics-group', this)">$2,500 — Full Glass</span>
+        <div class="input-wrapper">
+          <span class="input-affix">$</span>
+          <input type="number" id="avionics-fund" placeholder="0" min="0" step="100">
         </div>
       </div>
 
-      <div class="specs-grid" style="margin-top:22px;">
+      <div class="specs-grid" style="margin-top:6px;">
         <div class="field-group">
           <label class="field-label">Annual Hangar / Tiedown Fees</label>
           <div class="input-wrapper">
@@ -778,24 +760,6 @@
 </div>
 
 <script>
-  var PROFILES = {
-    c150:    { price: 45000,  down: 9000,  gph: 6.0,  tbo: 2000, smoh: 1200, overhaul: 30000, hangar: 3000,  annual: 2200, ins: 1400 },
-    c172:    { price: 145000, down: 29000, gph: 8.5,  tbo: 2000, smoh: 1000, overhaul: 38000, hangar: 3600,  annual: 2800, ins: 2200 },
-    c182:    { price: 185000, down: 45000, gph: 12.0, tbo: 1500, smoh: 800,  overhaul: 45000, hangar: 4000,  annual: 3400, ins: 2900 },
-    pa28c:   { price: 85000,  down: 18000, gph: 8.2,  tbo: 2000, smoh: 1100, overhaul: 35000, hangar: 3600,  annual: 2500, ins: 1900 },
-    pa28a:   { price: 155000, down: 35000, gph: 9.0,  tbo: 2000, smoh: 950,  overhaul: 38000, hangar: 3600,  annual: 2900, ins: 2400 },
-    grumman: { price: 95000,  down: 20000, gph: 8.5,  tbo: 2000, smoh: 1250, overhaul: 36000, hangar: 3600,  annual: 2600, ins: 2100 },
-    j3cub:   { price: 40000,  down: 8000,  gph: 4.5,  tbo: 2000, smoh: 800,  overhaul: 18000, hangar: 2400,  annual: 1600, ins: 1100 },
-    achamp:  { price: 38000,  down: 7500,  gph: 5.0,  tbo: 1800, smoh: 700,  overhaul: 18000, hangar: 2400,  annual: 1500, ins: 1100 },
-    bonanza: { price: 245000, down: 60000, gph: 14.5, tbo: 1700, smoh: 700,  overhaul: 55000, hangar: 4800,  annual: 4500, ins: 4200 }
-  };
-
-  var PROFILE_LABELS = {
-    c150: 'Cessna 150/152', c172: 'Cessna 172 Skyhawk', c182: 'Cessna 182 Skylane',
-    pa28c: 'Piper PA-28 Cherokee', pa28a: 'Piper PA-28 Archer', grumman: 'Grumman AA-5 Series',
-    j3cub: 'J3 Piper Cub', achamp: 'Aeronca Champ', bonanza: 'Beechcraft Bonanza', custom: 'Custom Aircraft'
-  };
-
   function fmt(n) {
     var num = parseFloat(n);
     return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -810,35 +774,11 @@
     var badges = document.querySelectorAll('#' + groupId + ' .badge');
     for (var i = 0; i < badges.length; i++) badges[i].classList.remove('active');
     el.classList.add('active');
-    if (groupId === 'credit-group') {
-      var isFair = el.getAttribute('data-fair') === 'true';
-      document.getElementById('fair-warning').style.display = isFair ? 'block' : 'none';
-    }
   }
 
-  function applyProfile() {
-    var key = document.getElementById('aircraft-select').value;
-    var ids = ['purchase-price','down-payment','fuel-gph','tbo-limit','current-time','overhaul-cost','hangar-cost','annual-cost','insurance-cost'];
-
-    if (!key || key === 'custom') {
-      for (var i = 0; i < ids.length; i++) {
-        document.getElementById(ids[i]).value = '';
-        document.getElementById(ids[i]).removeAttribute('readonly');
-      }
-      return;
-    }
-
-    var p = PROFILES[key];
-    if (!p) return;
-    document.getElementById('purchase-price').value  = p.price;
-    document.getElementById('down-payment').value    = p.down;
-    document.getElementById('fuel-gph').value        = p.gph;
-    document.getElementById('tbo-limit').value       = p.tbo;
-    document.getElementById('current-time').value    = p.smoh;
-    document.getElementById('overhaul-cost').value   = p.overhaul;
-    document.getElementById('hangar-cost').value     = p.hangar;
-    document.getElementById('annual-cost').value     = p.annual;
-    document.getElementById('insurance-cost').value  = p.ins;
+  function checkCreditScore() {
+    var score = parseInt(document.getElementById('credit-score').value, 10) || 720;
+    document.getElementById('fair-warning').style.display = (score < 640) ? 'block' : 'none';
   }
 
   function toggleLeaseback() {
@@ -875,34 +815,28 @@
     var fuelCost = parseFloat(document.getElementById('fuel-cost').value)      || 6.50;
     var stateTax = parseFloat(document.getElementById('state-tax').value)      || 0;
     var flightHrs= parseFloat(document.getElementById('flight-hours').value)   || 75;
+    var avionics = parseFloat(document.getElementById('avionics-fund').value)  || 0;
 
-    var partners    = parseInt(getActiveBadgeValue('share-group'), 10)   || 1;
-    var rateAnnual  = parseFloat(getActiveBadgeValue('credit-group'))    || 7.25;
-    var termYears   = parseInt(getActiveBadgeValue('term-group'), 10)    || 15;
-    var gearType    = getActiveBadgeValue('gear-group')                  || 'fixed';
-    var avionics    = parseFloat(getActiveBadgeValue('avionics-group'))  || 0;
+    var partners   = parseInt(getActiveBadgeValue('share-group'), 10) || 1;
+    var rateAnnual = parseFloat(document.getElementById('interest-rate').value) || 7.50;
+    var termYears  = parseInt(getActiveBadgeValue('term-group'), 10)  || 15;
+    var creditScore= parseInt(document.getElementById('credit-score').value, 10) || 720;
 
-    var activeCreditBadge = document.querySelector('#credit-group .badge.active');
-    var isFair = activeCreditBadge ? activeCreditBadge.getAttribute('data-fair') === 'true' : false;
     var isLeaseback = document.getElementById('leaseback-toggle').checked;
     var schoolHrs   = parseFloat(document.getElementById('school-hours').value) || 0;
 
-    // Fair credit floor
+    // Credit score floor: scores below 640 require 25% minimum down payment
     var minDown = price * 0.25;
     var downPayment = rawDown;
     var fairFloorApplied = false;
-    if (isFair && rawDown < minDown) {
+    if (creditScore < 640 && rawDown < minDown) {
       downPayment = minDown;
       fairFloorApplied = true;
     }
 
-    // Retractable gear surcharges
+    // Direct overhead inputs — no gear surcharges applied
     var insurAdj   = insur;
     var annInspAdj = annInsp;
-    if (gearType === 'retractable') {
-      insurAdj   += 1000;
-      annInspAdj += 500;
-    }
 
     // Principal
     var principalTotal = price - downPayment;
@@ -916,7 +850,7 @@
     // Escrow buffer
     var bufferShare = 1500.0 / partners;
 
-    // True closing cash
+    // Closing cash
     var closingTotal = downShare + taxShare + bufferShare;
 
     // Amortization: M = P * [r(1+r)^n] / [(1+r)^n - 1]
@@ -940,10 +874,10 @@
     var annualVariable = hourlyVarCost * flightHrs;
 
     // Engine reserve (split by partner, multiplied by personal hours)
-    var remainingHrs         = Math.max(tbo - smoh, 50);
-    var reserveRatePerHr     = ovhlCost / remainingHrs;
-    var reservePerPartnerHr  = reserveRatePerHr / partners;
-    var annualEngineReserve  = reservePerPartnerHr * flightHrs;
+    var remainingHrs        = Math.max(tbo - smoh, 50);
+    var reserveRatePerHr    = ovhlCost / remainingHrs;
+    var reservePerPartnerHr = reserveRatePerHr / partners;
+    var annualEngineReserve = reservePerPartnerHr * flightHrs;
 
     // Leaseback
     var leasebackCredit = 0;
@@ -956,46 +890,44 @@
     var blendedHourly = annualTotal / Math.max(flightHrs, 1);
 
     // Labels
-    var aircraftKey   = document.getElementById('aircraft-select').value;
-    var aircraftLabel = PROFILE_LABELS[aircraftKey] || 'Custom Aircraft';
-    var shareLabel    = partners === 1 ? 'Sole Owner' : '1/' + partners + ' Share';
+    var shareLabel = partners === 1 ? 'Sole Owner' : '1/' + partners + ' Share';
 
     // Populate
-    document.getElementById('res-aircraft-label').textContent = aircraftLabel + ' · ' + shareLabel + ' · ' + termYears + '-yr loan';
+    document.getElementById('res-aircraft-label').textContent = 'Aircraft Financial Asset Projection Summary · ' + shareLabel + ' · ' + termYears + '-yr loan';
     document.getElementById('res-hours-label').textContent    = 'Based on ' + flightHrs + ' personal flight hours/year';
     document.getElementById('res-annual-total').textContent   = fmt(annualTotal);
     document.getElementById('res-per-hour').textContent       = fmt(blendedHourly) + '/hr';
 
-    document.getElementById('res-principal').textContent    = fmt(principalShare);
-    document.getElementById('res-interest-rate').textContent = rateAnnual.toFixed(2) + '%' + (fairFloorApplied ? ' (25% down floor applied)' : '');
-    document.getElementById('res-down').textContent          = fmt(downShare) + (fairFloorApplied ? ' (adjusted to 25% min)' : '');
+    document.getElementById('res-principal').textContent     = fmt(principalShare);
+    document.getElementById('res-interest-rate').textContent = rateAnnual.toFixed(2) + '%' + (fairFloorApplied ? ' (25% down floor enforced)' : '');
+    document.getElementById('res-down').textContent          = fmt(downShare) + (fairFloorApplied ? ' (adjusted to 25% minimum)' : '');
     document.getElementById('res-tax').textContent           = fmt(taxShare);
     document.getElementById('res-buffer').textContent        = fmt(bufferShare);
     document.getElementById('res-closing-total').textContent = fmt(closingTotal);
 
-    document.getElementById('res-monthly').textContent       = fmt(monthlyPayment) + '/mo';
-    document.getElementById('res-annual-loan').textContent   = fmt(annualLoan);
-    document.getElementById('res-fixed-overhead').textContent= fmt(totalFixed);
-    document.getElementById('res-variable').textContent      = fmt(annualVariable);
-    document.getElementById('res-engine-reserve').textContent= fmt(annualEngineReserve);
+    document.getElementById('res-monthly').textContent        = fmt(monthlyPayment) + '/mo';
+    document.getElementById('res-annual-loan').textContent    = fmt(annualLoan);
+    document.getElementById('res-fixed-overhead').textContent = fmt(totalFixed);
+    document.getElementById('res-variable').textContent       = fmt(annualVariable);
+    document.getElementById('res-engine-reserve').textContent = fmt(annualEngineReserve);
 
     if (isLeaseback) {
-      document.getElementById('res-leaseback-block').style.display   = 'block';
-      document.getElementById('res-school-hours').textContent         = schoolHrs + ' hrs';
-      document.getElementById('res-leaseback-credit').textContent     = '−' + fmt(leasebackCredit);
-      document.getElementById('res-bl-leaseback-row').style.display  = 'flex';
-      document.getElementById('res-bl-leaseback').textContent         = '−' + fmt(leasebackCredit);
+      document.getElementById('res-leaseback-block').style.display  = 'block';
+      document.getElementById('res-school-hours').textContent        = schoolHrs + ' hrs';
+      document.getElementById('res-leaseback-credit').textContent    = '−' + fmt(leasebackCredit);
+      document.getElementById('res-bl-leaseback-row').style.display = 'flex';
+      document.getElementById('res-bl-leaseback').textContent        = '−' + fmt(leasebackCredit);
     } else {
-      document.getElementById('res-leaseback-block').style.display   = 'none';
-      document.getElementById('res-bl-leaseback-row').style.display  = 'none';
+      document.getElementById('res-leaseback-block').style.display  = 'none';
+      document.getElementById('res-bl-leaseback-row').style.display = 'none';
     }
 
-    document.getElementById('res-bl-loan').textContent    = fmt(annualLoan);
-    document.getElementById('res-bl-fixed').textContent   = fmt(totalFixed);
-    document.getElementById('res-bl-variable').textContent= fmt(annualVariable);
-    document.getElementById('res-bl-engine').textContent  = fmt(annualEngineReserve);
-    document.getElementById('res-bl-annual').textContent  = fmt(annualTotal);
-    document.getElementById('res-bl-hourly').textContent  = fmt(blendedHourly) + '/hr';
+    document.getElementById('res-bl-loan').textContent     = fmt(annualLoan);
+    document.getElementById('res-bl-fixed').textContent    = fmt(totalFixed);
+    document.getElementById('res-bl-variable').textContent = fmt(annualVariable);
+    document.getElementById('res-bl-engine').textContent   = fmt(annualEngineReserve);
+    document.getElementById('res-bl-annual').textContent   = fmt(annualTotal);
+    document.getElementById('res-bl-hourly').textContent   = fmt(blendedHourly) + '/hr';
 
     // Swap views
     document.getElementById('form-view').style.display    = 'none';
