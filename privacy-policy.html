@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Calcs Made Simple</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --ink:        #1a1d23;
+      --ink-mid:    #4a4f5c;
+      --ink-light:  #7a8090;
+      --rule:       #dde1e8;
+      --surface:    #f7f8fa;
+      --white:      #ffffff;
+      --accent:     #2563eb;
+      --accent-dim: #dbeafe;
+
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+              Roboto, Helvetica, Arial, sans-serif;
+
+      --max-w: 720px;
+      --pad-x: clamp(1.25rem, 5vw, 3rem);
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--white);
+      color: var(--ink);
+      line-height: 1.7;
+      min-height: 640px;
+      height: auto;
+      overflow: visible;
+    }
+
+    /* ── Top accent bar ── */
+    .top-bar {
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent) 0%, #60a5fa 100%);
+    }
+
+    /* ── Page wrapper ── */
+    .page {
+      width: 100%;
+      padding: 3rem var(--pad-x) 4rem;
+    }
+
+    .inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+    }
+
+    /* ── Breadcrumb / eyebrow ── */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .eyebrow svg {
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      border-bottom: 1.5px solid var(--rule);
+      padding-bottom: 1.75rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .page-title {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: var(--ink);
+      margin-bottom: 0.6rem;
+    }
+
+    .effective-date {
+      font-size: 0.875rem;
+      color: var(--ink-light);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Intro callout ── */
+    .intro-callout {
+      background: var(--accent-dim);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      padding: 1rem 1.25rem;
+      margin-bottom: 2.75rem;
+      font-size: 0.9rem;
+      color: #1e3a6e;
+      line-height: 1.6;
+    }
+
+    /* ── Policy sections ── */
+    .section {
+      margin-bottom: 2.25rem;
+    }
+
+    .section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-num {
+      flex-shrink: 0;
+      width: 1.75rem;
+      height: 1.75rem;
+      background: var(--accent);
+      color: var(--white);
+      border-radius: 50%;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0;
+      position: relative;
+      top: -1px;
+    }
+
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 650;
+      color: var(--ink);
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+
+    .section-body {
+      font-size: 0.925rem;
+      color: var(--ink-mid);
+      line-height: 1.75;
+      padding-left: 2.5rem; /* align under title, past the number badge */
+    }
+
+    /* ── Divider between sections ── */
+    .section + .section {
+      border-top: 1px solid var(--rule);
+      padding-top: 2.25rem;
+    }
+
+    /* ── Footer ── */
+    .page-footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1.5px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .footer-brand {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--ink-light);
+      text-transform: uppercase;
+    }
+
+    .footer-note {
+      font-size: 0.78rem;
+      color: var(--ink-light);
+    }
+
+    /* ── Responsive tweaks ── */
+    @media (max-width: 500px) {
+      .section-body {
+        padding-left: 0;
+        margin-top: 0.5rem;
+      }
+
+      .page-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .section {
+        animation: fadeUp 0.35s ease both;
+      }
+      .section:nth-child(2) { animation-delay: 0.07s; }
+      .section:nth-child(3) { animation-delay: 0.14s; }
+      .section:nth-child(4) { animation-delay: 0.21s; }
+      .section:nth-child(5) { animation-delay: 0.28s; }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar" aria-hidden="true"></div>
+
+  <main class="page">
+    <div class="inner">
+
+      <!-- Eyebrow -->
+      <div class="eyebrow">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M6 1L1 4v5l5 2 5-2V4L6 1z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/>
+        </svg>
+        Calcs Made Simple
+      </div>
+
+      <!-- Page header -->
+      <header class="page-header">
+        <h1 class="page-title">Privacy Policy</h1>
+        <p class="effective-date">Effective Date: June 23, 2026</p>
+      </header>
+
+      <!-- Intro callout -->
+      <div class="intro-callout" role="note">
+        Your financial data belongs to you — and it stays with you. Here is a plain-language explanation of how this site handles information.
+      </div>
+
+      <!-- Section 1 -->
+      <section class="section" aria-labelledby="s1-title">
+        <div class="section-header">
+          <span class="section-num" aria-hidden="true">1</span>
+          <h2 class="section-title" id="s1-title">100% Browser-Based Processing (Data Isolation)</h2>
+        </div>
+        <p class="section-body">
+          Calcs Made Simple operates entirely inside your local web browser. Every number, asset value, and cost calculation you type stays inside your device's temporary memory. We do not transmit, collect, see, or store any of your financial inputs on any remote server. Your sensitive financial models never leave your computer.
+        </p>
+      </section>
+
+      <!-- Section 2 -->
+      <section class="section" aria-labelledby="s2-title">
+        <div class="section-header">
+          <span class="section-num" aria-hidden="true">2</span>
+          <h2 class="section-title" id="s2-title">Essential Local Storage and Session Cookies</h2>
+        </div>
+        <p class="section-body">
+          This website uses basic browser storage tokens solely to keep your calculation values intact when you switch back and forth between different calculator screens. These tokens do not track your internet history, cannot read files on your computer, and disappear automatically when you close your browser tab.
+        </p>
+      </section>
+
+      <!-- Section 3 -->
+      <section class="section" aria-labelledby="s3-title">
+        <div class="section-header">
+          <span class="section-num" aria-hidden="true">3</span>
+          <h2 class="section-title" id="s3-title">Anonymous Site Performance Statistics</h2>
+        </div>
+        <p class="section-body">
+          We may use lightweight, anonymous scripts to measure page loading speeds and look for layout bugs. These tools only measure general website health and cannot collect your name, location, email address, or any personal details.
+        </p>
+      </section>
+
+      <!-- Section 4 -->
+      <section class="section" aria-labelledby="s4-title">
+        <div class="section-header">
+          <span class="section-num" aria-hidden="true">4</span>
+          <h2 class="section-title" id="s4-title">Encrypted Contact Communications</h2>
+        </div>
+        <p class="section-body">
+          If you choose to use our Contact Us form, your email address and message are instantly encrypted over a secure connection (HTTPS) before being routed to our private inbox. This data is used exclusively to answer your question and is never shared, rented, or sold to third-party marketing companies.
+        </p>
+      </section>
+
+      <!-- Footer -->
+      <footer class="page-footer">
+        <span class="footer-brand">Calcs Made Simple</span>
+        <span class="footer-note">This policy was last updated June 23, 2026.</span>
+      </footer>
+
+    </div>
+  </main>
+
+</body>
+</html>
