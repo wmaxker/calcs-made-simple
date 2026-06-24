@@ -1,0 +1,706 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Classic Car Self-Restoration Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --muted: #cbd5e1;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --accent: #1e40af;
+    --accent-light: #dbeafe;
+    --danger: #dc2626;
+    --credit: #059669;
+    --radius: 10px;
+    --font: 'Inter', sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 32px 16px 64px;
+    transition: background 0.2s;
+  }
+
+  body.results-active { background: #eff6ff; }
+
+  .page-wrap { max-width: 820px; margin: 0 auto; min-height: 640px; height: auto; }
+
+  .checkbox-field {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 8px;
+    padding-top: 4px;
+  }
+  .checkbox-field input[type="checkbox"] {
+    width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent);
+    flex-shrink: 0;
+  }
+  .checkbox-field label {
+    font-size: 12px; font-weight: 600; color: var(--text-secondary);
+    cursor: pointer; letter-spacing: 0.2px;
+  }
+
+  .page-header { margin-bottom: 28px; }
+  .page-header h1 {
+    font-size: 30px; font-weight: 700;
+    color: var(--text-primary); letter-spacing: -0.5px;
+  }
+  .page-header p {
+    margin-top: 4px; color: var(--text-secondary); font-size: 13px;
+  }
+
+  #alert-box {
+    display: none;
+    background: #fef2f2; border: 1px solid #fecaca;
+    color: var(--danger); border-radius: var(--radius);
+    padding: 12px 16px; font-size: 13px; font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 22px 24px; margin-bottom: 16px;
+  }
+  .results-active .card { border-color: #bfdbfe; }
+
+  .card-title {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--text-secondary);
+    margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+  }
+
+  .specs-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px;
+  }
+  @media (max-width: 560px) { .specs-grid { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field.full-width { grid-column: 1 / -1; }
+
+  label { font-size: 12px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.2px; }
+
+  .input-wrap { position: relative; display: flex; align-items: center; }
+
+  .prefix {
+    position: absolute; left: 10px; font-size: 13px;
+    color: var(--text-secondary); pointer-events: none; font-weight: 500;
+  }
+  .suffix {
+    position: absolute; right: 10px; font-size: 13px;
+    color: var(--text-secondary); pointer-events: none; font-weight: 500;
+  }
+
+  input[type="number"] {
+    width: 100%; height: 38px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 6px;
+    font-family: var(--font); font-size: 13px; color: var(--text-primary);
+    padding: 0 32px 0 24px; outline: none; transition: border-color 0.15s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus { border-color: var(--accent); background: #fff; }
+  input.no-prefix { padding-left: 10px; }
+  input.has-suffix { padding-right: 30px; }
+
+  .badge-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge {
+    padding: 6px 14px; border: 1px solid var(--border); border-radius: 20px;
+    font-size: 12px; font-weight: 600; color: var(--text-secondary);
+    background: var(--bg); cursor: pointer; transition: all 0.15s; user-select: none;
+  }
+  .badge.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .btn-primary {
+    display: block; width: 100%; height: 44px; background: var(--accent);
+    color: #fff; border: none; border-radius: var(--radius);
+    font-family: var(--font); font-size: 14px; font-weight: 600;
+    cursor: pointer; letter-spacing: 0.2px; transition: background 0.15s; margin-top: 20px;
+  }
+  .btn-primary:hover { background: #1e3a8a; }
+
+  .results-actions {
+    display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap;
+  }
+  .btn-action-print {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 9px 20px; background: var(--accent); color: #fff;
+    border: none; border-radius: 6px; font-family: var(--font);
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    transition: background 0.15s; letter-spacing: 0.2px;
+  }
+  .btn-action-print:hover { background: #1e3a8a; }
+  .btn-action-return {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 9px 20px; background: #ffffff; color: var(--text-secondary);
+    border: 1px solid var(--border); border-radius: 6px; font-family: var(--font);
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    transition: all 0.15s; letter-spacing: 0.2px;
+  }
+  .btn-action-return:hover { border-color: var(--accent); color: var(--accent); }
+
+  #form-view  { display: block; }
+  #results-view { display: none; }
+
+  .metrics-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 16px;
+  }
+  @media (max-width: 640px) { .metrics-grid { grid-template-columns: 1fr; } }
+
+  .metric-card {
+    background: #fff; border: 1px solid #bfdbfe;
+    border-radius: var(--radius); padding: 18px 20px;
+  }
+  .metric-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: #1e40af; margin-bottom: 6px;
+  }
+  .metric-value {
+    font-size: 24px; font-weight: 700; color: var(--text-primary);
+    letter-spacing: -0.5px; line-height: 1.2;
+  }
+  .metric-value.credit { color: var(--credit); }
+  .metric-value.debit  { color: var(--danger); }
+
+  .results-card {
+    background: #fff; border: 1px solid #bfdbfe;
+    border-radius: var(--radius); margin-bottom: 16px; overflow: hidden;
+  }
+  .results-card-title {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: #1e40af; padding: 16px 20px;
+    border-bottom: 1px solid #bfdbfe; background: #eff6ff;
+    cursor: pointer; display: flex; justify-content: space-between;
+    align-items: center; user-select: none;
+  }
+  .drawer-toggle { font-size: 16px; color: #1e40af; transition: transform 0.2s; }
+  .drawer-toggle.open { transform: rotate(180deg); }
+  .results-card-body { display: none; padding: 20px; }
+  .results-card-body.open { display: block; }
+
+  .line-items { display: flex; flex-direction: column; }
+  .line-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 0; border-bottom: 1px solid #eff6ff; font-size: 13px;
+  }
+  .line-item:last-child { border-bottom: none; }
+  .line-item-label { color: var(--text-secondary); font-weight: 500; }
+  .line-item-value { font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  .line-item-value.credit { color: var(--credit); }
+  .line-item-value.debit  { color: var(--danger); }
+
+  .line-section-header {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.7px; color: #1e40af;
+    padding: 12px 0 6px; border-bottom: 1px solid #bfdbfe; margin-bottom: 2px;
+  }
+  .line-total {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0 0; margin-top: 6px; border-top: 2px solid #bfdbfe;
+    font-weight: 700; font-size: 13px;
+  }
+  .line-total-label { color: var(--text-primary); }
+  .line-total-value { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  .line-total-value.credit { color: var(--credit); }
+  .line-total-value.debit  { color: var(--danger); }
+
+  @media print {
+    body { background: #fff !important; padding: 0; }
+    #form-view, .btn-primary, .btn-secondary, .results-actions { display: none !important; }
+    #results-view { display: block !important; }
+    .results-card-body { display: block !important; }
+    .results-card-title .drawer-toggle { display: none; }
+    .metrics-grid { grid-template-columns: repeat(3, 1fr) !important; }
+    .metric-card, .results-card { border: 1px solid #ccc !important; }
+    body.results-active { background: #fff !important; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="page-header">
+    <h1>Classic Car Self-Restoration Calculator</h1>
+    <p>Easily calculate vehicle self-restoration costs and expected net profit.</p>
+  </div>
+
+  <div id="alert-box">Please enter a valid Purchase Price and Market Value (Post-Restoration) before calculating.</div>
+
+  <!-- FORM VIEW -->
+  <div id="form-view">
+
+    <div class="card">
+      <div class="card-title">Initial Purchase &amp; Transport</div>
+      <div class="specs-grid">
+
+        <div class="field">
+          <label for="purchase-price">Vehicle Purchase Price</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="purchase-price" step="500" min="0" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="hauling-cost">Towing &amp; Hauling Costs</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="hauling-cost" step="100" min="0" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="sales-tax">Sales Tax Rate</label>
+          <div class="input-wrap">
+            <input type="number" id="sales-tax" step="0.1" min="0" placeholder="0.0" class="no-prefix has-suffix" />
+            <span class="suffix">%</span>
+          </div>
+        </div>
+
+        <div class="checkbox-field">
+          <input type="checkbox" id="use-financing" />
+          <label for="use-financing">Financing this vehicle? (Optional)</label>
+        </div>
+
+      </div>
+
+      <div id="financing-panel" style="display: none; border-top: 1px dashed var(--border); margin-top: 16px; padding-top: 16px;">
+        <div class="specs-grid">
+
+          <div class="field">
+            <label for="down-payment">Down Payment Amount</label>
+            <div class="input-wrap">
+              <span class="prefix">$</span>
+              <input type="number" id="down-payment" step="250" min="0" placeholder="0" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="interest-rate">Loan Interest Rate</label>
+            <div class="input-wrap">
+              <input type="number" id="interest-rate" step="0.01" min="0" placeholder="0.00" class="no-prefix has-suffix" />
+              <span class="suffix">%</span>
+            </div>
+          </div>
+
+          <div class="field full-width">
+            <label>Loan Term</label>
+            <div class="badge-group" id="term-group">
+              <div class="badge" data-months="36">3 Years</div>
+              <div class="badge active" data-months="60">5 Years</div>
+              <div class="badge" data-months="84">7 Years</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <div class="card-title">Restoration Costs</div>
+      <div class="specs-grid">
+
+        <div class="field">
+          <label for="engine-budget">Engine &amp; Drivetrain Budget</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="engine-budget" step="250" min="0" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="chassis-budget">Chassis, Brakes &amp; Suspension</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="chassis-budget" step="100" min="0" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="paint-budget">Bodywork &amp; Paint Costs</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="paint-budget" step="250" min="0" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="interior-budget">Interior &amp; Upholstery Fund</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="interior-budget" step="100" min="0" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="tools-budget">Tools &amp; Supplies Reserve</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="tools-budget" step="50" min="0" placeholder="0" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Registration &amp; Fees</div>
+      <div class="specs-grid">
+
+        <div class="field">
+          <label for="registration-cost">Title, Tags &amp; Registration</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="registration-cost" step="25" min="0" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="inspection-cost">Safety &amp; Emissions Inspection</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="inspection-cost" step="10" min="0" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="insurance-cost">Annual Classic Car Insurance</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="insurance-cost" step="50" min="0" placeholder="0" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Market Valuation &amp; Equity</div>
+      <div class="specs-grid">
+
+        <div class="field">
+          <label for="finished-value">Market Value (Post-Restoration)</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="finished-value" step="500" min="0" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="selling-fees">Selling Fees (If Applicable)</label>
+          <div class="input-wrap">
+            <span class="prefix">$</span>
+            <input type="number" id="selling-fees" step="50" min="0" placeholder="0" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="calculate()">Calculate Costs</button>
+
+  </div><!-- /form-view -->
+
+  <!-- RESULTS VIEW -->
+  <div id="results-view">
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Total Restoration Cost</div>
+        <div class="metric-value" id="res-total-cost">$0.00</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Market Valuation (Post-Restoration)</div>
+        <div class="metric-value" id="res-market-value">$0.00</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Net Profit / Equity</div>
+        <div class="metric-value" id="res-net-profit">$0.00</div>
+      </div>
+    </div>
+
+    <!-- Drawer 1: Build Breakdown -->
+    <div class="results-card">
+      <div class="results-card-title" onclick="toggleDrawer('drawer-build')">
+        Build Cost Breakdown
+        <span class="drawer-toggle" id="toggle-build">&#9660;</span>
+      </div>
+      <div class="results-card-body" id="drawer-build">
+        <div class="line-items">
+
+          <div class="line-section-header">Day 1 Cash Required</div>
+          <div class="line-item">
+            <span class="line-item-label" id="day1-purchase-label">Vehicle Purchase Price</span>
+            <span class="line-item-value" id="day1-purchase">$0.00</span>
+          </div>
+          <div class="line-item">
+            <span class="line-item-label">Towing &amp; Hauling</span>
+            <span class="line-item-value" id="day1-hauling">$0.00</span>
+          </div>
+          <div class="line-item">
+            <span class="line-item-label">Sales Tax</span>
+            <span class="line-item-value" id="day1-tax">$0.00</span>
+          </div>
+          <div class="line-item">
+            <span class="line-item-label">Title, Tags &amp; Registration</span>
+            <span class="line-item-value" id="day1-registration">$0.00</span>
+          </div>
+          <div class="line-total">
+            <span class="line-total-label">Total Day 1 Cash</span>
+            <span class="line-total-value" id="day1-total">$0.00</span>
+          </div>
+
+          <div class="line-section-header" style="margin-top:14px;">Parts &amp; Paint Totals</div>
+          <div class="line-item">
+            <span class="line-item-label">Engine &amp; Drivetrain</span>
+            <span class="line-item-value" id="res-engine">$0.00</span>
+          </div>
+          <div class="line-item">
+            <span class="line-item-label">Chassis, Brakes &amp; Suspension</span>
+            <span class="line-item-value" id="res-chassis">$0.00</span>
+          </div>
+          <div class="line-item">
+            <span class="line-item-label">Bodywork &amp; Paint</span>
+            <span class="line-item-value" id="res-paint">$0.00</span>
+          </div>
+          <div class="line-item">
+            <span class="line-item-label">Interior &amp; Upholstery</span>
+            <span class="line-item-value" id="res-interior">$0.00</span>
+          </div>
+          <div class="line-item">
+            <span class="line-item-label">Tools &amp; Supplies</span>
+            <span class="line-item-value" id="res-tools">$0.00</span>
+          </div>
+          <div class="line-item">
+            <span class="line-item-label">Safety &amp; Emissions Inspection</span>
+            <span class="line-item-value" id="res-inspection">$0.00</span>
+          </div>
+          <div class="line-total">
+            <span class="line-total-label">Total Parts &amp; Work</span>
+            <span class="line-total-value" id="res-parts-total">$0.00</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer 2: Carrying Costs -->
+    <div class="results-card">
+      <div class="results-card-title" onclick="toggleDrawer('drawer-carrying')">
+        Ongoing Carrying Costs
+        <span class="drawer-toggle" id="toggle-carrying">&#9660;</span>
+      </div>
+      <div class="results-card-body" id="drawer-carrying">
+        <div class="line-items">
+
+          <div class="line-section-header">Financing</div>
+          <div class="line-item">
+            <span class="line-item-label">Monthly Loan Payment</span>
+            <span class="line-item-value" id="res-monthly-loan">$0.00</span>
+          </div>
+          <div class="line-item">
+            <span class="line-item-label">Annual Loan Payments</span>
+            <span class="line-item-value" id="res-annual-loan">$0.00</span>
+          </div>
+
+          <div class="line-section-header" style="margin-top:14px;">Insurance &amp; Overhead</div>
+          <div class="line-item">
+            <span class="line-item-label">Annual Classic Car Insurance</span>
+            <span class="line-item-value" id="res-insurance">$0.00</span>
+          </div>
+          <div class="line-total">
+            <span class="line-total-label">Total Annual Carrying Cost</span>
+            <span class="line-total-value" id="res-annual-carrying">$0.00</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="results-actions" style="margin-top: 4px; margin-bottom: 0;">
+      <button class="btn-action-print" onclick="window.print()">Print Results</button>
+      <button class="btn-action-return" onclick="goBack()">Recalculate Variables</button>
+    </div>
+
+  </div><!-- /results-view -->
+
+</div><!-- /page-wrap -->
+
+<script>
+  // Badge Group
+  document.querySelectorAll('#term-group .badge').forEach(function(b) {
+    b.addEventListener('click', function() {
+      document.querySelectorAll('#term-group .badge').forEach(function(x) {
+        x.classList.remove('active');
+      });
+      this.classList.add('active');
+    });
+  });
+
+  // Financing toggle
+  document.getElementById('use-financing').addEventListener('change', function() {
+    var panel = document.getElementById('financing-panel');
+    if (this.checked) {
+      panel.style.display = 'block';
+    } else {
+      panel.style.display = 'none';
+      document.getElementById('interest-rate').value = '';
+      document.getElementById('down-payment').value  = '';
+    }
+  });
+
+  // Currency formatter
+  function fmt(n) {
+    return '$' + Number(n).toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  // Safe number reader
+  function v(id) {
+    return parseFloat(document.getElementById(id).value) || 0;
+  }
+
+  // Drawer toggle
+  function toggleDrawer(id) {
+    var body   = document.getElementById(id);
+    var suffix = id.replace('drawer-', '');
+    var toggle = document.getElementById('toggle-' + suffix);
+    var isOpen = body.classList.toggle('open');
+    if (isOpen) {
+      toggle.classList.add('open');
+    } else {
+      toggle.classList.remove('open');
+    }
+  }
+
+  // Go back to form
+  function goBack() {
+    document.getElementById('results-view').style.display = 'none';
+    document.getElementById('form-view').style.display    = 'block';
+    document.body.classList.remove('results-active');
+    window.scrollTo(0, 0);
+  }
+
+  // Main calculate
+  function calculate() {
+    var alertBox = document.getElementById('alert-box');
+    alertBox.style.display = 'none';
+
+    var purchasePrice = v('purchase-price');
+    var finishedValue = v('finished-value');
+
+    if (purchasePrice <= 0 || finishedValue <= 0) {
+      alertBox.style.display = 'block';
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    var hauling      = v('hauling-cost');
+    var downPayment  = v('down-payment');
+    var interestRate = v('interest-rate');
+    var salesTaxPct  = v('sales-tax');
+    var engine       = v('engine-budget');
+    var chassis      = v('chassis-budget');
+    var paint        = v('paint-budget');
+    var interior     = v('interior-budget');
+    var tools        = v('tools-budget');
+    var registration = v('registration-cost');
+    var inspection   = v('inspection-cost');
+    var insurance    = v('insurance-cost');
+    var sellingFees  = v('selling-fees');
+
+    var termMonths = parseInt(
+      document.querySelector('#term-group .badge.active').getAttribute('data-months')
+    );
+
+    var salesTax    = purchasePrice * (salesTaxPct / 100);
+    var monthlyLoan = 0;
+    var annualLoan  = 0;
+    var isCash      = !document.getElementById('use-financing').checked;
+
+    if (!isCash) {
+      var principal = purchasePrice - downPayment;
+      if (principal > 0) {
+        var r = (interestRate / 100) / 12;
+        monthlyLoan = principal * (r * Math.pow(1 + r, termMonths)) / (Math.pow(1 + r, termMonths) - 1);
+        annualLoan  = monthlyLoan * 12;
+      }
+    }
+
+    var restorationParts   = engine + chassis + paint + interior + tools;
+    var totalRestorationCost = purchasePrice + hauling + restorationParts + registration + inspection + salesTax;
+    var netProfit          = finishedValue - totalRestorationCost - sellingFees;
+
+    var day1Purchase, day1Label;
+    if (isCash) {
+      day1Purchase = purchasePrice;
+      day1Label    = 'Vehicle Purchase Price (Cash)';
+    } else {
+      day1Purchase = downPayment;
+      day1Label    = 'Down Payment';
+    }
+    var day1Total    = day1Purchase + hauling + salesTax + registration;
+    var annualCarrying = annualLoan + insurance;
+
+    // Set text helper
+    function setText(id, val) {
+      document.getElementById(id).textContent = val;
+    }
+
+    // Banner
+    setText('res-total-cost',   fmt(totalRestorationCost));
+    setText('res-market-value', fmt(finishedValue));
+
+    var profitEl = document.getElementById('res-net-profit');
+    profitEl.textContent = fmt(netProfit);
+    profitEl.className   = 'metric-value' + (netProfit >= 0 ? ' credit' : ' debit');
+
+    // Day 1
+    document.getElementById('day1-purchase-label').textContent = day1Label;
+    setText('day1-purchase',     fmt(day1Purchase));
+    setText('day1-hauling',      fmt(hauling));
+    setText('day1-tax',          fmt(salesTax));
+    setText('day1-registration', fmt(registration));
+    setText('day1-total',        fmt(day1Total));
+
+    // Parts
+    setText('res-engine',      fmt(engine));
+    setText('res-chassis',     fmt(chassis));
+    setText('res-paint',       fmt(paint));
+    setText('res-interior',    fmt(interior));
+    setText('res-tools',       fmt(tools));
+    setText('res-inspection',  fmt(inspection));
+    setText('res-parts-total', fmt(restorationParts + inspection));
+
+    // Carrying
+    setText('res-monthly-loan',    fmt(monthlyLoan));
+    setText('res-annual-loan',     fmt(annualLoan));
+    setText('res-insurance',       fmt(insurance));
+    setText('res-annual-carrying', fmt(annualCarrying));
+
+    // Screen swap
+    document.getElementById('form-view').style.display    = 'none';
+    document.getElementById('results-view').style.display = 'block';
+    document.body.classList.add('results-active');
+    window.scrollTo(0, 0);
+  }
+</script>
+</body>
+</html>
