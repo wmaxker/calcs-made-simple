@@ -1,1 +1,214 @@
 
+<!DOCTYPE html>
+<!--
+  skeleton-snippet.html
+  ─────────────────────────────────────────────────────────────────────────────
+  BOILERPLATE SHELL for third-party ad network scripts and sponsored code strings.
+
+  PURPOSE
+    This file is the structural "landing pad" for any external ad code that
+    must run inside the ad engine's sandboxed iframe (lifecycle stage: code_snippet).
+    It enforces a hard 300×600 px boundary so that third-party content cannot
+    clip, overflow, or reflow the parent dashboard layout under any circumstances.
+
+  HOW TO USE
+    1. Duplicate this file and rename it to match your campaign:
+         ads/sponsored-snippets/[network]-[campaign-name].html
+    2. Paste the third-party script tag, embed code, or ad network initialisation
+       block into the clearly marked INJECTION ZONE below.
+    3. Reference the new filename in ads/ad-control.json under the target route:
+         "code_snippet": { "src": "ads/sponsored-snippets/[network]-[campaign-name].html" }
+    4. The ad engine will load this file in a sandboxed iframe automatically.
+
+  WHAT NOT TO TOUCH
+    - Do not change the <meta> viewport or charset tags.
+    - Do not change the body / #ad-frame CSS that enforces the 300×600 boundary.
+    - Do not add any element outside of #ad-frame; the iframe's viewport
+      IS the clip boundary — overflow:hidden on the body backs it up.
+
+  SANDBOX REMINDER
+    When this file runs inside the ad engine's iframe, it is subject to the
+    sandbox attribute set in ad-control.json. Ensure the permissions you grant
+    there match what the third-party code actually needs. The minimum safe set
+    for most network tags is: allow-scripts allow-popups
+  ─────────────────────────────────────────────────────────────────────────────
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    The viewport meta below is intentionally fixed to the ad unit dimensions.
+    Do not widen it — the parent dashboard reserves exactly 300px for this column.
+  -->
+  <meta name="viewport" content="width=300, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Ad Unit</title>
+  <style>
+    /* ── Reset ───────────────────────────────────────────────────────────── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin:     0;
+      padding:    0;
+    }
+
+    /* ── Hard clip boundary ──────────────────────────────────────────────── */
+    /*
+     * html and body are locked to exactly the ad unit dimensions.
+     * overflow:hidden on both is intentional and load-bearing:
+     *   - It prevents third-party content from expanding the iframe's
+     *     scrollable area, which would cause the parent column to reflow.
+     *   - Some network scripts inject position:fixed or position:absolute
+     *     elements; clipping at both levels catches both cases.
+     */
+    html,
+    body {
+      width:      300px;
+      height:     600px;
+      max-width:  300px;
+      max-height: 600px;
+      overflow:   hidden;
+      background: transparent;
+      font-family: system-ui, sans-serif;
+      font-size:   14px;
+      line-height: 1;
+    }
+
+    /* ── #ad-frame — the single content mount point ──────────────────────── */
+    /*
+     * All third-party markup must live inside this element.
+     * It is a strict 300×600 box. Nothing inside it can escape outward.
+     *
+     * position:relative creates a stacking context so that any
+     * position:absolute children from network scripts are clipped here
+     * rather than at the viewport level.
+     */
+    #ad-frame {
+      position:   relative;
+      width:      300px;
+      height:     600px;
+      overflow:   hidden;
+      display:    block;
+    }
+
+    /* ── Fallback state ───────────────────────────────────────────────────── */
+    /*
+     * .ad-fallback is hidden by default. If your ad network provides an
+     * error callback, use JS below to add the class "visible" to it.
+     * This keeps the reserved space from going completely blank on failure.
+     */
+    .ad-fallback {
+      display:         none;
+      width:           300px;
+      height:          600px;
+      align-items:     center;
+      justify-content: center;
+      background:      #f8fafc;
+      color:           #9ca3af;
+      font-size:       11px;
+      font-family:     system-ui, sans-serif;
+      text-align:      center;
+      padding:         16px;
+    }
+    .ad-fallback.visible {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+
+  <!--
+    ═══════════════════════════════════════════════════════════════════════════
+    #ad-frame — INJECTION ZONE
+    ───────────────────────────────────────────────────────────────────────────
+    Paste your entire third-party ad code block here, directly inside #ad-frame.
+    Do not place anything outside this element.
+
+    Common patterns:
+
+      ① Ad network <script> + <div> tag pair:
+            <div id="network-ad-unit-12345"></div>
+            <script async src="https://cdn.ad-network.com/tag.js"></script>
+
+      ② Inline script (pixel or initialiser):
+            <script>
+              window.adConfig = { zoneId: 12345, width: 300, height: 600 };
+              (function(){ var s = document.createElement('script'); ... })();
+            </script>
+
+      ③ <ins> tag (Google AdSense / similar):
+            <ins class="adsbygoogle"
+                 style="display:block;width:300px;height:600px"
+                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                 data-ad-slot="XXXXXXXXXX"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+    ═══════════════════════════════════════════════════════════════════════════
+  -->
+  <div id="ad-frame">
+
+    <!-- ↓↓↓ PASTE THIRD-PARTY CODE HERE ↓↓↓ -->
+
+
+
+    <!-- ↑↑↑ END THIRD-PARTY CODE ↑↑↑ -->
+
+    <!--
+      Fallback label — shown only if your JS error handler calls:
+        document.querySelector('.ad-fallback').classList.add('visible');
+    -->
+    <div class="ad-fallback" aria-hidden="true">
+      Sponsored content unavailable
+    </div>
+
+  </div><!-- /#ad-frame -->
+
+  <!--
+    ─────────────────────────────────────────────────────────────────────────
+    OPTIONAL: Error + Load Handling Shell
+    ─────────────────────────────────────────────────────────────────────────
+    Uncomment and adapt the block below if the third-party network provides
+    callback hooks or you need to surface the fallback label on failure.
+    ─────────────────────────────────────────────────────────────────────────
+
+  <script>
+    (function () {
+      'use strict';
+
+      var fallback = document.querySelector('.ad-fallback');
+
+      // ── Success callback example ──────────────────────────────────────────
+      // Replace 'networkAdLoaded' with the actual event or callback your
+      // ad network fires on successful render.
+      //
+      // window.networkAdLoaded = function () {
+      //   // Ad rendered successfully — nothing to do.
+      // };
+
+      // ── Failure callback example ──────────────────────────────────────────
+      // Replace 'networkAdFailed' with the actual event or callback your
+      // ad network fires when no fill is available.
+      //
+      // window.networkAdFailed = function () {
+      //   if (fallback) { fallback.classList.add('visible'); }
+      // };
+
+      // ── Timeout safety net ────────────────────────────────────────────────
+      // If the network script stalls, surface the fallback after N ms.
+      // Adjust the timeout value to match your network's SLA.
+      //
+      // var TIMEOUT_MS = 5000;
+      // var timer = setTimeout(function () {
+      //   if (fallback) { fallback.classList.add('visible'); }
+      // }, TIMEOUT_MS);
+      //
+      // Clear the timer if the network confirms a successful load:
+      // window.networkAdLoaded = function () { clearTimeout(timer); };
+
+    }());
+  </script>
+
+  -->
+
+</body>
+</html>
+
