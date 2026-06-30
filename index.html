@@ -149,10 +149,10 @@
         <!-- FOOTER -->
         <footer style="border-top:1.5px solid #e2e8f0; padding:1.1rem 0.2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:1rem;">
             <nav style="display:flex; gap:1.5rem; flex-wrap:wrap;">
-                <a href="#" style="font-size:0.8rem; color:#475569; font-weight:500; text-decoration:none;" onmouseover="this.style.color='#3B82F6'" onmouseout="this.style.color='#475569'">Contact Us</a>
-                <a href="#" style="font-size:0.8rem; color:#475569; font-weight:500; text-decoration:none;" onmouseover="this.style.color='#3B82F6'" onmouseout="this.style.color='#475569'">About Us</a>
-                <a href="#" style="font-size:0.8rem; color:#475569; font-weight:500; text-decoration:none;" onmouseover="this.style.color='#3B82F6'" onmouseout="this.style.color='#475569'">Privacy Policy</a>
-                <a href="#" style="font-size:0.8rem; color:#475569; font-weight:500; text-decoration:none;" onmouseover="this.style.color='#3B82F6'" onmouseout="this.style.color='#475569'">Terms of Service</a>
+                <a href="?app=contact" class="footer-link" onclick="event.preventDefault(); loadApp('contact');" style="font-size:0.8rem; color:#475569; font-weight:500; text-decoration:none;" onmouseover="this.style.color='#3B82F6'" onmouseout="this.style.color='#475569'">Contact Us</a>
+                <a href="?app=about" class="footer-link" onclick="event.preventDefault(); loadApp('about');" style="font-size:0.8rem; color:#475569; font-weight:500; text-decoration:none;" onmouseover="this.style.color='#3B82F6'" onmouseout="this.style.color='#475569'">About Us</a>
+                <a href="?app=privacy" class="footer-link" onclick="event.preventDefault(); loadApp('privacy');" style="font-size:0.8rem; color:#475569; font-weight:500; text-decoration:none;" onmouseover="this.style.color='#3B82F6'" onmouseout="this.style.color='#475569'">Privacy Policy</a>
+                <a href="?app=terms" class="footer-link" onclick="event.preventDefault(); loadApp('terms');" style="font-size:0.8rem; color:#475569; font-weight:500; text-decoration:none;" onmouseover="this.style.color='#3B82F6'" onmouseout="this.style.color='#475569'">Terms of Service</a>
             </nav>
             <span style="font-size:0.76rem; color:#94a3b8; font-weight:400;">&copy; 2026 calcsmadesimple.com. All rights reserved.</span>
         </footer>
@@ -167,6 +167,34 @@
             ]}
         ];
         let activeSlug = null;
+
+        /* Static footer routes: slug -> { file, title, description, schemaType } */
+        const STATIC_ROUTES = {
+            about: {
+                file: 'about-us-info.html',
+                title: 'About Us | Calcs Made Simple',
+                description: 'Learn about Calcs Made Simple, a free suite of niche ROI calculators and financial utility tools built to help you make smarter cost decisions.',
+                schemaType: 'AboutPage'
+            },
+            privacy: {
+                file: 'privacy-policy.html',
+                title: 'Privacy Policy | Calcs Made Simple',
+                description: 'Our privacy policy explains how Calcs Made Simple keeps your data 100% browser-based, with no server-side storage or tracking of your calculator inputs.',
+                schemaType: 'PrivacyPolicy'
+            },
+            terms: {
+                file: 'terms.html',
+                title: 'Terms of Service | Calcs Made Simple',
+                description: 'Review the terms of service for Calcs Made Simple, including our educational cost estimation disclaimers and limits of liability.',
+                schemaType: 'WebPage'
+            },
+            contact: {
+                file: 'contact-us-info.html',
+                title: 'Contact Us | Calcs Made Simple',
+                description: 'Get in touch with Calcs Made Simple through our encrypted, secure inbox submission form for questions, feedback, or support.',
+                schemaType: 'ContactPage'
+            }
+        };
 
         function buildSidebar() {
             const el = document.getElementById('sidebar-inner');
@@ -187,7 +215,65 @@
             });
         }
 
+        /* Updates document.title, meta description, and JSON-LD schema for static routes */
+        function updateStaticRouteMetadata(routeConfig) {
+            document.title = routeConfig.title;
+
+            const metaDesc = document.querySelector('meta[name="description"]');
+            if (metaDesc) metaDesc.setAttribute('content', routeConfig.description);
+
+            /* Clear any previously injected static-route schema before appending the fresh node */
+            const existingSchema = document.getElementById('static-route-schema');
+            if (existingSchema) existingSchema.remove();
+
+            const schemaScript = document.createElement('script');
+            schemaScript.type = 'application/ld+json';
+            schemaScript.id = 'static-route-schema';
+            schemaScript.textContent = JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": routeConfig.schemaType,
+                "name": routeConfig.title,
+                "url": window.location.href,
+                "description": routeConfig.description
+            });
+            document.head.appendChild(schemaScript);
+        }
+
         function loadApp(slug) {
+            /* Static footer route short-circuit: about, privacy, terms, contact */
+            if (Object.prototype.hasOwnProperty.call(STATIC_ROUTES, slug)) {
+                const routeConfig = STATIC_ROUTES[slug];
+                activeSlug = slug;
+
+                /* Toggle Workspace */
+                document.getElementById('welcome-container').style.display = 'none';
+                const iframe = document.getElementById('app-viewport');
+                iframe.style.display = 'block';
+                iframe.src = routeConfig.file;
+
+                /* Clear Active Nav States */
+                document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+
+                /* Monetization Compliance: reset ad container to clean homepage state */
+                const adContainer = document.getElementById('sidebar-ad-container');
+                adContainer.innerHTML = '';
+                adContainer.style.background = '#f8fafc';
+                adContainer.style.border = 'none';
+
+                /* SEO & Schema.org metadata */
+                updateStaticRouteMetadata(routeConfig);
+
+                /* History Management: only push state if the query param doesn't already match */
+                const currentSlug = new URLSearchParams(window.location.search).get('app');
+                if (currentSlug !== slug) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('app', slug);
+                    history.pushState({ slug }, '', url.toString());
+                }
+
+                return;
+            }
+
             activeSlug = slug;
             document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
             const btn = document.getElementById('btn-' + slug);
