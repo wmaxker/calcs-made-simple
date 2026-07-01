@@ -1,1 +1,263 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us | Calcs Made Simple</title>
+
+<!-- Google Fonts: Inter -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ---------------------------------------------------
+     CLEAN RESET
+  --------------------------------------------------- */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.5;
+    color: #0f172a;
+    background-color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------------------------------------------------
+     LAYOUT
+  --------------------------------------------------- */
+  article {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 48px 32px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .instructions {
+    font-size: 15px;
+    font-weight: 400;
+    color: #475569;
+    margin-bottom: 32px;
+  }
+
+  /* ---------------------------------------------------
+     FORM
+  --------------------------------------------------- */
+  #contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  textarea {
+    font-family: inherit;
+    font-size: 14px;
+    color: #0f172a;
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    width: 100%;
+  }
+
+  input[type="text"]::placeholder,
+  input[type="email"]::placeholder,
+  textarea::placeholder {
+    color: #94a3b8;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 130px;
+  }
+
+  /* Royal blue submit button, matching premium SaaS UI */
+  .submit-btn {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #2563eb;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 20px;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: background-color 0.15s ease, transform 0.05s ease;
+  }
+
+  .submit-btn:hover {
+    background-color: #1d4ed8;
+  }
+
+  .submit-btn:active {
+    transform: translateY(1px);
+  }
+
+  .submit-btn:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+  }
+
+  /* ---------------------------------------------------
+     SUCCESS STATE
+  --------------------------------------------------- */
+  #success-message {
+    display: none;
+    font-size: 15px;
+    font-weight: 500;
+    color: #0f172a;
+    background-color: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+
+  #error-message {
+    display: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: #b91c1c;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<article>
+  <h1>Contact Us</h1>
+  <p class="instructions">Please type your message in the box below.</p>
+
+  <!-- Contact form: submits securely to Static Forms API -->
+  <form id="contact-form" action="https://staticforms.dev" method="POST">
+
+    <!-- Static Forms secure access key -->
+    <input type="hidden" name="accessKey" value="sf_a5742517601e41fcac040d71">
+
+    <div class="field-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" placeholder="Your full name" required>
+    </div>
+
+    <div class="field-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required>
+    </div>
+
+    <div class="field-group">
+      <label for="message">Message</label>
+      <textarea id="message" name="message" placeholder="How can we help?" required></textarea>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submit-btn">Submit</button>
+
+    <p id="error-message">Something went wrong sending your message. Please try again.</p>
+  </form>
+
+  <!-- Success confirmation, hidden until form submits successfully -->
+  <p id="success-message">Thank you, your message has been sent.</p>
+</article>
+
+<script>
+  // ---------------------------------------------------
+  // Vanilla ES6 form submission handler
+  // Intercepts submit, posts via fetch(), swaps UI in-place
+  // ---------------------------------------------------
+  (function () {
+    const form = document.getElementById('contact-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const messageField = document.getElementById('message');
+    const successMessage = document.getElementById('success-message');
+    const errorMessage = document.getElementById('error-message');
+
+    form.addEventListener('submit', function (event) {
+      // Prevent default full-page/parent-tab submission behavior
+      event.preventDefault();
+
+      // Hide any prior error state and lock the button while sending
+      errorMessage.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+
+      const formData = new FormData(form);
+
+      fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Accept: 'application/json'
+        }
+      })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(function () {
+          // Clear the message field
+          messageField.value = '';
+
+          // Hide the active form and reveal the success confirmation,
+          // entirely in-place with no page or parent-tab refresh
+          form.style.display = 'none';
+          successMessage.style.display = 'block';
+        })
+        .catch(function () {
+          // Show inline error, restore the button for a retry
+          errorMessage.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit';
+        });
+    });
+  })();
+</script>
+
+</body>
+</html>
+
