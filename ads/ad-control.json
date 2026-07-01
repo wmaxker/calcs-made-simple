@@ -1,129 +1,60 @@
-
 {
   "_meta": {
-    "version": "1.0.0",
-    "description": "Master ad switchboard for the calculator suite. Controls which ad lifecycle stage is active per calculator route. Edit 'type' and its matching payload block to promote a slot through the pipeline.",
-    "lifecycle_stages": [
-      "placeholder",
-      "local_link",
-      "code_snippet",
-      "dual_stacked"
-    ],
-    "last_updated": "2025-01-01",
+    "version": "2.0.0",
+    "description": "Master ad switchboard. Each calculator route declares its own adType and payload. The ad engine reads this file on every page load and builds the sidebar layout automatically.",
+    "adTypes": ["single-skyscraper", "dual-stacked"],
     "maintainer": "ad-ops"
   },
-  "_schema_reference": {
-    "_comment": [
-      "─────────────────────────────────────────────────────────────────",
-      "  LIFECYCLE STAGE TEMPLATES — copy the block you need into a     ",
-      "  calculator route below and set 'type' to match.               ",
-      "─────────────────────────────────────────────────────────────────",
-      "",
-      "  STAGE 1 ─ placeholder",
-      "  Shows a static local image, no link. Used at launch / pre-sale.",
-      "  {",
-      "    \"type\": \"placeholder\",",
-      "    \"placeholder\": {",
-      "      \"image\": \"ads/placeholders/[name]-default.png\",",
-      "      \"alt\":   \"Advertisement coming soon\"",
-      "    }",
-      "  }",
-      "",
-      "  STAGE 2 ─ local_link",
-      "  Static local image that wraps in an anchor tag.",
-      "  Used for direct-sold campaigns with a known landing page.",
-      "  {",
-      "    \"type\": \"local_link\",",
-      "    \"local_link\": {",
-      "      \"image\":  \"ads/creatives/[name]-campaign.png\",",
-      "      \"alt\":    \"Descriptive alt text for the ad image\",",
-      "      \"url\":    \"https://advertiser-landing-page.com/campaign\",",
-      "      \"target\": \"_blank\",",
-      "      \"rel\":    \"noopener noreferrer sponsored\"",
-      "    }",
-      "  }",
-      "",
-      "  STAGE 3 ─ code_snippet",
-      "  Loads an HTML file from ads/sponsored-snippets/ into a sandboxed",
-      "  iframe. Use for third-party ad networks, tracking pixels, or any",
-      "  code that must run in isolation from the main app.",
-      "  {",
-      "    \"type\": \"code_snippet\",",
-      "    \"code_snippet\": {",
-      "      \"src\":    \"ads/sponsored-snippets/[network]-[campaign].html\",",
-      "      \"width\":  300,",
-      "      \"height\": 600,",
-      "      \"sandbox\": \"allow-scripts allow-same-origin allow-popups\",",
-      "      \"label\":  \"Sponsored\"",
-      "    }",
-      "  }",
-      "",
-      "  STAGE 4 ─ dual_stacked",
-      "  Renders two independent 300x300 ad units stacked vertically inside",
-      "  the single 300x600 container. Each slot is independently typed     ",
-      "  and can mix lifecycle stages (e.g. top=local_link, bottom=code_snippet).",
-      "  {",
-      "    \"type\": \"dual_stacked\",",
-      "    \"dual_stacked\": {",
-      "      \"top\": {",
-      "        \"type\":  \"local_link\",",
-      "        \"image\": \"ads/creatives/[name]-top.png\",",
-      "        \"alt\":   \"Top ad alt text\",",
-      "        \"url\":   \"https://advertiser-a.com\",",
-      "        \"target\":\"_blank\",",
-      "        \"rel\":   \"noopener noreferrer sponsored\"",
-      "      },",
-      "      \"bottom\": {",
-      "        \"type\":  \"code_snippet\",",
-      "        \"src\":   \"ads/sponsored-snippets/[network]-300x300.html\",",
-      "        \"width\": 300,",
-      "        \"height\":300,",
-      "        \"sandbox\":\"allow-scripts allow-same-origin allow-popups\",",
-      "        \"label\": \"Sponsored\"",
-      "      }",
-      "    }",
-      "  }",
-      "─────────────────────────────────────────────────────────────────"
-    ]
-  },
+
   "routes": {
-    "aircraft": {
-      "_comment": "Calculator route: ?app=aircraft — Aviation loan / cost estimator",
-      "type": "placeholder",
-      "placeholder": {
-        "image": "ads/placeholders/aircraft-default.png",
-        "alt": "Advertisement space — aircraft calculator"
+
+    "aircraft-cost-calculator": {
+      "adType":    "single-skyscraper",
+      "imagePath": "ads/placeholders/generic-default.png",
+      "linkUrl":   "?app=contact",
+      "alt":       "Advertisement"
+    },
+
+    "classic-car-restoration-calculator": {
+      "adType": "dual-stacked",
+      "slotA": {
+        "imagePath": "ads/placeholders/generic-default-square.png",
+        "linkUrl":   "?app=contact",
+        "alt":       "Advertisement"
+      },
+      "slotB": {
+        "imagePath": "ads/placeholders/generic-default-square.png",
+        "linkUrl":   "?app=contact",
+        "alt":       "Advertisement"
       }
     },
-    "classic-car": {
-      "_comment": "Calculator route: ?app=classic-car — Classic car valuation / restoration estimator",
-      "type": "placeholder",
-      "placeholder": {
-        "image": "ads/placeholders/classic-car-default.png",
-        "alt": "Advertisement space — classic car calculator"
-      }
-    },
-    "hobby-farm": {
-      "_comment": "Calculator route: ?app=hobby-farm — Hobby farm cost / acreage estimator",
-      "type": "placeholder",
-      "placeholder": {
-        "image": "ads/placeholders/hobby-farm-default.png",
-        "alt": "Advertisement space — hobby farm calculator"
+
+    "hobby-farm-roi-calculator": {
+      "adType": "dual-stacked",
+      "slotA": {
+        "imagePath": "ads/placeholders/generic-default-square.png",
+        "linkUrl":   "?app=contact",
+        "alt":       "Advertisement"
+      },
+      "slotB": {
+        "imagePath": "ads/placeholders/generic-default-square.png",
+        "linkUrl":   "?app=contact",
+        "alt":       "Advertisement"
       }
     }
+
   },
+
   "defaults": {
-    "_comment": "Fallback values used by ad-engine.js when a route key is missing or a field is omitted. Do not remove this block.",
     "container": {
-      "width": 300,
-      "height": 600,
-      "homepage_bg": "#f8fafc",
-      "show_label": false,
-      "show_border": false
+      "width":      300,
+      "height":     600,
+      "homepageBg": "#f8fafc"
     },
-    "placeholder": {
-      "image": "ads/placeholders/generic-default.png",
-      "alt": "Advertisement"
+    "slot": {
+      "imagePath": "ads/placeholders/generic-default.png",
+      "linkUrl":   "?app=contact",
+      "alt":       "Advertisement"
     }
   }
 }
