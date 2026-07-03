@@ -4,6 +4,8 @@ const CONTAINER_ID = 'sidebar-ad-container';
 const CONTAINER_W = 300;
 const CONTAINER_H = 600;
 const SLOT_H = 300;
+const MOBILE_BREAKPOINT = 960;
+const MOBILE_H = 250;
 const HOMEPAGE_BG = '#f8fafc';
 const STATIC_PAGES = new Set(['contact', 'about', 'privacy', 'terms', 'welcome']);
 
@@ -16,13 +18,18 @@ const RAW_HTML_SANDBOX = 'allow-scripts allow-popups allow-popups-to-escape-sand
 async function initAdEngine() {
   const container = document.getElementById(CONTAINER_ID);
   if (!container) { console.warn('[AdEngine] #sidebar-ad-container not found.'); return; }
-  applyContainerBase(container);
+
+  const isMobile = window.innerWidth < MOBILE_BREAKPOINT;
+  applyContainerBase(container, isMobile);
+
   const appParam = getAppParam();
-  if (!appParam || STATIC_PAGES.has(appParam)) { applyBlankState(container); return; }
+  if (!appParam || STATIC_PAGES.has(appParam)) { applyBlankState(container, isMobile); return; }
+
   let config;
-  try { config = await fetchConfig(); } catch (err) { console.error('[AdEngine] Error:', err); applyBlankState(container); return; }
+  try { config = await fetchConfig(); } catch (err) { console.error('[AdEngine] Error:', err); applyBlankState(container, isMobile); return; }
+
   const route = resolveRoute(appParam, config);
-  renderAd(container, route, config.defaults || {});
+  renderAd(container, route, config.defaults || {}, isMobile);
 }
 
 function getAppParam() {
@@ -56,29 +63,38 @@ function resolveRoute(appParam, config) {
   return { adType: 'single-skyscraper', imagePath: slot.imagePath || '', linkUrl: slot.linkUrl || '#', alt: slot.alt || 'Advertisement' };
 }
 
-function applyContainerBase(container) {
-  Object.assign(container.style, { width: `${CONTAINER_W}px`, height: `${CONTAINER_H}px`, overflow: 'hidden', position: 'relative', display: 'block', boxSizing: 'border-box', margin: '0', padding: '0', border: 'none', background: 'transparent' });
+function getContainerHeight(isMobile) {
+  return isMobile ? MOBILE_H : CONTAINER_H;
 }
 
-function applyBlankState(container) {
+function applyContainerBase(container, isMobile) {
+  const h = getContainerHeight(isMobile);
+  Object.assign(container.style, { width: `${CONTAINER_W}px`, height: `${h}px`, overflow: 'hidden', position: 'relative', display: 'block', boxSizing: 'border-box', margin: '0', padding: '0', border: 'none', background: 'transparent' });
+}
+
+function applyBlankState(container, isMobile) {
   container.innerHTML = '';
+  applyContainerBase(container, isMobile);
   container.style.background = HOMEPAGE_BG;
 }
 
-function renderAd(container, route, defaults) {
+function renderAd(container, route, defaults, isMobile) {
   container.innerHTML = '';
   container.style.background = 'transparent';
   const adType = (route.adType || '').toLowerCase();
   switch (adType) {
-    case 'single-skyscraper': renderSingleSkyscraper(container, route, defaults); break;
-    case 'dual-stacked': renderDualStacked(container, route, defaults); break;
-    default: console.warn(`[AdEngine] Unknown type.`); applyBlankState(container); break;
+    case 'single-skyscraper': renderSingleSkyscraper(container, route, defaults, isMobile); break;
+    case 'dual-stacked': renderDualStacked(container, route, defaults, isMobile); break;
+    default: console.warn(`[AdEngine] Unknown type.`); applyBlankState(container, isMobile); break;
   }
 }
 
 // Builds the visual content for one slot: a sandboxed iframe if rawHtml is
-// present, otherwise the standard anchor/image pairing.
-function buildSlotContent(cfg, slotDefaults, w, h) {
+// present, otherwise the standard anchor/image pairing. `fit` and `center`
+// let mobile single-skyscraper mode scale a tall 300x600 image down without
+// cropping instead of cover-cropping it.
+function buildSlotContent(cfg, slotDefaults, w, h, options) {
+  const opts = options || {};
   const rawHtml = typeof cfg.rawHtml === 'string' ? cfg.rawHtml.trim() : '';
   if (rawHtml) {
     return buildRawHtmlFrame(rawHtml, w, h);
@@ -86,32 +102,46 @@ function buildSlotContent(cfg, slotDefaults, w, h) {
   const imagePath = (cfg.imagePath || slotDefaults.imagePath || '').trim();
   const linkUrl = (cfg.linkUrl || slotDefaults.linkUrl || '#').trim();
   const alt = (cfg.alt || slotDefaults.alt || 'Advertisement').trim();
-  const anchor = buildAnchor(linkUrl);
-  const img = buildImage(imagePath, alt, w, h);
+  const anchor = buildAnchor(linkUrl, !!opts.center);
+  const img = buildImage(imagePath, alt, w, h, opts.fit || 'cover');
   anchor.appendChild(img);
   return anchor;
 }
 
-function renderSingleSkyscraper(container, route, defaults) {
+function renderSingleSkyscraper(container, route, defaults, isMobile) {
   const slotDefaults = defaults.slot || {};
-  const content = buildSlotContent(route, slotDefaults, CONTAINER_W, CONTAINER_H);
+  const h = getContainerHeight(isMobile);
+  const hasImageOnly = !route.rawHtml && !!(route.imagePath || slotDefaults.imagePath);
+
+  // Mobile + a single 300x600 image with no dedicated mobile creative:
+  // scale it down proportionally (object-fit: contain) inside the
+  // shrunk 300x250 container instead of cropping it.
+  const options = (isMobile && hasImageOnly) ? { fit: 'contain', center: true } : {};
+
+  const content = buildSlotContent(route, slotDefaults, CONTAINER_W, h, options);
   container.appendChild(content);
 }
 
-function renderDualStacked(container, route, defaults) {
+function renderDualStacked(container, route, defaults, isMobile) {
   const slotDefaults = defaults.slot || {};
   const stack = document.createElement('div');
-  Object.assign(stack.style, { display: 'flex', flexDirection: 'column', alignItems: 'stretch', width: `${CONTAINER_W}px`, height: `${CONTAINER_H}px`, overflow: 'hidden', gap: '0' });
+  const containerH = getContainerHeight(isMobile);
+  Object.assign(stack.style, { display: 'flex', flexDirection: 'column', alignItems: 'stretch', width: `${CONTAINER_W}px`, height: `${containerH}px`, overflow: 'hidden', gap: '0' });
 
-  [route.slotA, route.slotB].forEach(function (slotCfg, index) {
+  // Mobile mode only has room for one 300x250 slot, so slotB is omitted
+  // entirely and slotA is rendered full-height at the mobile size.
+  const slotsToRender = isMobile ? [route.slotA] : [route.slotA, route.slotB];
+  const slotHeight = isMobile ? MOBILE_H : SLOT_H;
+
+  slotsToRender.forEach(function (slotCfg, index) {
     const cfg = slotCfg || {};
     const slotEl = document.createElement('div');
-    Object.assign(slotEl.style, { width: `${CONTAINER_W}px`, height: `${SLOT_H}px`, overflow: 'hidden', flexShrink: '0', position: 'relative', display: 'block' });
+    Object.assign(slotEl.style, { width: `${CONTAINER_W}px`, height: `${slotHeight}px`, overflow: 'hidden', flexShrink: '0', position: 'relative', display: 'block' });
     slotEl.dataset.adSlot = index === 0 ? 'a' : 'b';
 
     // Each slot is resolved independently so slotA can be a raw code
     // snippet while slotB is a plain image, or vice versa.
-    const content = buildSlotContent(cfg, slotDefaults, CONTAINER_W, SLOT_H);
+    const content = buildSlotContent(cfg, slotDefaults, CONTAINER_W, slotHeight, {});
     slotEl.appendChild(content);
     stack.appendChild(slotEl);
   });
@@ -119,23 +149,29 @@ function renderDualStacked(container, route, defaults) {
   container.appendChild(stack);
 }
 
-function buildAnchor(href) {
+function buildAnchor(href, center) {
   const a = document.createElement('a');
   a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer sponsored';
-  Object.assign(a.style, { display: 'block', width: '100%', height: '100%', lineHeight: '0' });
+  if (center) {
+    Object.assign(a.style, { display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', lineHeight: '0' });
+  } else {
+    Object.assign(a.style, { display: 'block', width: '100%', height: '100%', lineHeight: '0' });
+  }
   return a;
 }
 
-function buildImage(src, alt, w, h) {
+function buildImage(src, alt, w, h, fit) {
   const img = document.createElement('img');
   img.src = src; img.alt = alt; img.width = w; img.height = h; img.draggable = false;
-  Object.assign(img.style, { display: 'block', width: '100%', height: '100%', objectFit: 'cover', border: 'none' });
+  Object.assign(img.style, { display: 'block', width: '100%', height: '100%', objectFit: fit || 'cover', border: 'none' });
   img.onerror = function () { img.style.visibility = 'hidden'; console.warn('Image missing:', src); };
   return img;
 }
 
 // Renders an advertiser rawHtml/JS snippet inside a sandboxed iframe via
 // srcdoc, isolating it from the host page's DOM, cookies, and storage.
+// w/h are passed in by the caller, so this automatically resizes to
+// 300x250 on mobile for both single-skyscraper and dual-stacked slotA.
 function buildRawHtmlFrame(rawHtml, w, h) {
   const iframe = document.createElement('iframe');
   iframe.setAttribute('sandbox', RAW_HTML_SANDBOX);
