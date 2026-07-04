@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="indexifembedded" />
+    <!-- OPT 5: Replaced incorrect "indexifembedded" directive with production-ready crawl directive -->
+    <meta name="robots" content="index, follow" />
     <title>Calcs Made Simple — Free ROI Calculators and Financial Utility Tools</title>
     <meta name="description" content="Free ROI calculators and financial utility tools." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -69,7 +70,8 @@
             box-shadow: inset 0px 4px 8px rgba(0,0,0,0.25), 0px 1px 0px rgba(255,255,255,0.2);
         }
         .category-label { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.13em; text-transform: uppercase; color: #475569; padding: 0 0.2rem; margin-top: 0.55rem; margin-bottom: 0.35rem; }
-        #app-viewport { width: 100%; height: 100%; border: none; display: block; flex: 1 1 auto; }
+        /* OPT 2: height is now set dynamically via postMessage resize; initial auto allows natural expansion */
+        #app-viewport { width: 100%; height: auto; min-height: 600px; border: none; display: block; flex: 1 1 auto; }
 
         /* CHANGE 2: Updated .ads-col and .ad-placeholder to support 300px width */
         .ad-placeholder { background: #eff6ff; border: 2px dashed #bfdbfe; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #3b82f6; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; gap: 7px; }
@@ -121,8 +123,22 @@
             <!-- CENTER PANEL -->
             <main style="flex:1 1 0%; min-width:0;">
                 <div class="main-content-card">
-                    <div id="welcome-container" style="height:100%; display:flex; flex-direction:column;"></div>
-                    <iframe id="app-viewport" src="about:blank" style="display:none; flex:1 1 auto;"></iframe>
+                    <!--
+                        OPT 4: Static welcome markup is now baked directly into the HTML.
+                        showWelcome() and loadApp() toggle display state only — no innerHTML rebuild on each call.
+                    -->
+                    <div id="welcome-container" style="display:flex; flex-direction:column; height:100%;">
+                        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:2rem;">
+                            <h2 style="font-size:1.6rem;font-weight:800;color:#0f172a;margin:0 0 0.65rem;">Welcome to Calcs Made Simple</h2>
+                            <p style="font-size:0.95rem;color:#475569;font-weight:600;margin:0;line-height:1.7;">Pick one of the calculator tools to get started!</p>
+                        </div>
+                    </div>
+                    <!--
+                        OPT 8: onload hook transfers keyboard focus into the iframe once content is ready,
+                        supporting screen readers and Tab-key navigation users.
+                    -->
+                    <iframe id="app-viewport" src="about:blank" style="display:none; flex:1 1 auto;"
+                        onload="this.focus();"></iframe>
                 </div>
                 <noscript>
                     <div style="display:none;" aria-hidden="true">
@@ -157,8 +173,9 @@
             <span style="font-size:0.76rem; color:#94a3b8; font-weight:400;">&copy; 2026 calcsmadesimple.com. All rights reserved.</span>
         </footer>
     </div>
+
     <script>
-        /* CHANGE 1: Updated APP_CONFIG with new labels and GitHub-matching slugs */
+        /* CHANGE 1: Updated APP_CONFIG with exact labels and GitHub-matching slugs */
         const APP_CONFIG = [
             { category: "CALCULATORS", items: [
                 { label: "Aircraft",    slug: "aircraft-cost-calculator" },
@@ -195,6 +212,34 @@
                 schemaType: 'ContactPage'
             }
         };
+
+        /* =====================================================================
+           OPT 2: postMessage iframe resize listener.
+           Listens for { type: 'iframe-resize', height: <px> } from child pages
+           and updates #app-viewport height to eliminate double scrollbars.
+
+           DROP THIS SNIPPET INSIDE EACH CHILD CALCULATOR FILE to wire it up:
+           -----------------------------------------------------------------------
+           (function() {
+               function sendHeight() {
+                   window.parent.postMessage(
+                       { type: 'iframe-resize', height: document.documentElement.scrollHeight },
+                       '*'
+                   );
+               }
+               window.addEventListener('load', sendHeight);
+               new MutationObserver(sendHeight).observe(document.body, { subtree: true, childList: true, attributes: true });
+           })();
+           -----------------------------------------------------------------------
+        ===================================================================== */
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'iframe-resize' && typeof event.data.height === 'number') {
+                var iframe = document.getElementById('app-viewport');
+                if (iframe) {
+                    iframe.style.height = event.data.height + 'px';
+                }
+            }
+        });
 
         function buildSidebar() {
             const el = document.getElementById('sidebar-inner');
@@ -240,18 +285,31 @@
         }
 
         function loadApp(slug) {
-            /* Static footer route short-circuit: about, privacy, terms, contact */
+            /*
+             * OPT 3: Static route prototype-safe check via hasOwnProperty.call
+             * Prevents runtime exceptions if URL tracking strings match generic object prototype properties.
+             * Static footer route short-circuit: about, privacy, terms, contact.
+             */
             if (Object.prototype.hasOwnProperty.call(STATIC_ROUTES, slug)) {
                 const routeConfig = STATIC_ROUTES[slug];
                 activeSlug = slug;
 
-                /* Toggle Workspace */
+                /* OPT 4: Toggle display state only — static welcome markup stays in the DOM */
                 document.getElementById('welcome-container').style.display = 'none';
                 const iframe = document.getElementById('app-viewport');
                 iframe.style.display = 'block';
-                iframe.src = routeConfig.file;
 
-                /* Clear Active Nav States */
+                /*
+                 * OPT 6: Use location.replace() instead of direct .src assignment.
+                 * Prevents static page loads from polluting the browser history stack.
+                 */
+                try {
+                    iframe.contentWindow.location.replace(routeConfig.file);
+                } catch(e) {
+                    iframe.src = routeConfig.file;
+                }
+
+                /* Clear Active Nav States — no sidebar calculator should appear highlighted */
                 document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
 
                 /* Monetization Compliance: reset ad container to clean homepage state */
@@ -271,42 +329,82 @@
                     history.pushState({ slug }, '', url.toString());
                 }
 
+                /*
+                 * OPT 7: Mobile smooth scroll — glides viewport down to .main-content-card
+                 * so the user sees the content load after clicking a footer link on narrow screens.
+                 */
+                if (window.innerWidth <= 960) {
+                    const card = document.querySelector('.main-content-card');
+                    if (card) {
+                        window.scrollTo({ top: card.offsetTop - 16, behavior: 'smooth' });
+                    }
+                }
+
                 return;
             }
+
+            /* ── Calculator route handling (falls through from static-route short-circuit) ── */
 
             activeSlug = slug;
             document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
             const btn = document.getElementById('btn-' + slug);
             if (btn) btn.classList.add('active');
+
+            /* OPT 4: Toggle display state only — static welcome markup stays in the DOM */
             document.getElementById('welcome-container').style.display = 'none';
             const iframe = document.getElementById('app-viewport');
             iframe.style.display = 'block';
-            iframe.src = slug + '.html';
+
+            /*
+             * OPT 6: Use location.replace() instead of direct .src assignment.
+             * Keeps the parent app's popstate router as the sole Back/Forward controller.
+             * Falls back to iframe.src if contentWindow is not yet accessible (e.g. about:blank cross-origin).
+             */
+            try {
+                iframe.contentWindow.location.replace(slug + '.html');
+            } catch(e) {
+                iframe.src = slug + '.html';
+            }
+
             const url = new URL(window.location.href);
             url.searchParams.set('app', slug);
             history.pushState({ slug }, '', url.toString());
 
             /* CHANGE 3: Hook — inject dynamic ad swap logic here (Type A / B / C per calculator) */
+            if (typeof initAdEngine === 'function') { initAdEngine(); }
+
+            /*
+             * OPT 7: Mobile smooth scroll — glides viewport down to .main-content-card
+             * so the user sees the tool load immediately after clicking a sidebar button on narrow screens.
+             */
+            if (window.innerWidth <= 960) {
+                const card = document.querySelector('.main-content-card');
+                if (card) {
+                    window.scrollTo({ top: card.offsetTop - 16, behavior: 'smooth' });
+                }
+            }
         }
 
-        /* CHANGE 3: showWelcome resets the ad container to the clean blank state */
+        /* CHANGE 3 / OPT 4: showWelcome toggles display state only — no innerHTML rebuild */
         function showWelcome() {
             activeSlug = null;
             document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+
+            /* Hide iframe, reset its location cleanly */
             const iframe = document.getElementById('app-viewport');
             iframe.style.display = 'none';
-            iframe.src = 'about:blank';
+            iframe.style.height = 'auto';
+            try {
+                iframe.contentWindow.location.replace('about:blank');
+            } catch(e) {
+                iframe.src = 'about:blank';
+            }
+
+            /* OPT 4: Restore the pre-baked static welcome panel via display toggle only */
             const wc = document.getElementById('welcome-container');
             wc.style.display = 'flex';
-            wc.style.flexDirection = 'column';
-            wc.style.height = '100%';
-            wc.innerHTML = `
-            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:2rem;">
-                <h2 style="font-size:1.6rem;font-weight:800;color:#0f172a;margin:0 0 0.65rem;">Welcome to Calcs Made Simple</h2>
-                <p style="font-size:0.95rem;color:#475569;font-weight:600;margin:0;line-height:1.7;">Pick one of the calculator tools to get started!</p>
-            </div>`;
 
-            /* CHANGE 3: Reset ad container to clean blank state on homepage */
+            /* Reset ad container to clean blank state on homepage */
             const adContainer = document.getElementById('sidebar-ad-container');
             adContainer.innerHTML = '';
             adContainer.style.background = '#f8fafc';
@@ -317,8 +415,20 @@
             const slug = new URLSearchParams(window.location.search).get('app');
             slug ? loadApp(slug) : showWelcome();
         }
+
+        /*
+         * OPT 1: Ad engine race condition fix.
+         * buildSidebar() runs immediately so the sidebar renders without delay.
+         * router() is deferred to DOMContentLoaded to guarantee ads/ad-engine.js has
+         * finished parsing before initAdEngine() could be called by loadApp() on deep-linked traffic.
+         */
         buildSidebar();
-        router();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', router);
+        } else {
+            /* DOMContentLoaded already fired (e.g. script is deferred or page loaded fast) */
+            router();
+        }
         window.addEventListener('popstate', router);
     </script>
 </body>
