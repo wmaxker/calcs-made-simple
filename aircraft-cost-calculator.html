@@ -953,5 +953,22 @@
     window.scrollTo(0, 0);
   }
 </script>
+
+<script>
+(function() {
+    function sendHeight() {
+        window.parent.postMessage({ 
+            type: 'iframe-resize', 
+            height: document.documentElement.scrollHeight 
+        }, '*');
+    }
+    window.addEventListener('load', sendHeight);
+    new MutationObserver(sendHeight).observe(document.body, { 
+        subtree: true, 
+        childList: true, 
+        attributes: true 
+    });
+})();
+</script>
 </body>
 </html>
