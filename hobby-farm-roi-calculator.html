@@ -1,4 +1,555 @@
-1: 'Sole Owner (1/1)',
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hobby Farm ROI Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { min-height: 640px; height: auto; }
+
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #ffffff; color: #0f172a; font-size: 15px; line-height: 1.5; min-height: 100vh; }
+
+  .main-container { max-width: 960px; margin: 0 auto; padding: 36px 40px 60px; min-height: 640px; height: auto; }
+
+  /* ── 2-col grid ── */
+  .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* ── Cards ── */
+  .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 32px; margin-bottom: 20px; box-shadow: 0 2px 14px rgba(0,0,0,0.05); }
+  .card-title { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 22px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; text-transform: none; letter-spacing: normal; }
+
+  /* ── Field groups ── */
+  .field-group { margin-bottom: 18px; }
+  .field-label { display: block; font-size: 0.85rem; font-weight: 600; color: #475569; letter-spacing: 0.01em; margin-bottom: 7px; }
+  .field-note { font-size: 0.75rem; color: #475569; margin-top: 5px; font-weight: 400; }
+
+  /* ── Input wrappers ── */
+  .input-wrapper { display: flex; align-items: stretch; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; background: #fff; transition: border-color 0.15s; }
+  .input-wrapper:focus-within { border-color: #1e40af; box-shadow: 0 0 0 3px rgba(30,64,175,0.08); }
+  .input-affix { background: #eef3fb; color: #475569; font-size: 0.82rem; font-weight: 600; padding: 0 12px; display: flex; align-items: center; white-space: nowrap; border-right: 1px solid #e2e8f0; min-width: 42px; justify-content: center; }
+  .input-affix.suffix { border-right: none; border-left: 1px solid #e2e8f0; }
+  .input-wrapper input[type="number"],
+  .input-wrapper input[type="text"] { flex: 1; border: none; outline: none; padding: 10px 12px; font-size: 0.9rem; font-family: 'Inter', sans-serif; color: #0f172a; background: transparent; font-weight: 500; -moz-appearance: textfield; min-width: 0; }
+  .input-wrapper input[type="number"]::-webkit-inner-spin-button,
+  .input-wrapper input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+  /* ── Badge groups ── */
+  .badge-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .badge-btn { padding: 8px 18px; border-radius: 7px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.15s; user-select: none; white-space: nowrap; font-family: inherit; }
+  .badge-btn:hover { border-color: #3b82f6; color: #1e40af; background: #eff6ff; }
+  .badge-btn.active { background: #1e40af; color: #fff; border-color: #1e40af; border-radius: 7px; font-weight: 600; }
+
+  /* ── Buttons ── */
+  .btn-primary { width: 100%; padding: 14px 24px; background: #1e40af; color: #fff; border: none; border-radius: 9px; font-size: 1rem; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; transition: background 0.15s; letter-spacing: -0.01em; }
+  .btn-primary:hover { background: #1d3fa0; }
+  .btn-secondary { padding: 11px 22px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 9px; font-size: 0.9rem; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: background 0.15s; }
+  .btn-secondary:hover { background: #e2e8f0; border-color: #cbd5e1; }
+
+  /* ── Results view ── */
+  #results-view { display: none; }
+
+  /* ── Summary banner ── */
+  .summary-banner { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 28px 32px; margin-bottom: 24px; display: flex; gap: 48px; align-items: center; flex-wrap: wrap; }
+  .summary-metric { flex: 1; min-width: 180px; text-align: left; display: block; }
+  .summary-metric .metric-sub { font-size: 0.78rem; font-weight: 600; color: #3b82f6; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; margin-top: 0; display: block; }
+  .summary-metric .metric-val { font-size: 2rem; font-weight: 800; color: #1e40af; letter-spacing: -0.03em; line-height: 1.1; display: block; }
+  .summary-metric .metric-val.credit,
+  .summary-metric .metric-val.positive { color: #059669; }
+  .summary-metric .metric-val.debit,
+  .summary-metric .metric-val.negative { color: #dc2626; }
+
+  /* ── Result blocks ── */
+  .result-block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 28px 32px; margin-bottom: 16px; box-shadow: 0 2px 14px rgba(0,0,0,0.04); }
+  .result-block-title { font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; text-transform: none; letter-spacing: normal; }
+
+  /* ── Result rows ── */
+  .rr-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid #f1f5f9; gap: 16px; }
+  .rr-row:last-child { border-bottom: none; }
+  .rr-label { font-size: 0.87rem; color: #475569; font-weight: 500; min-width: 0; flex: 1; }
+  .rr-val { font-size: 0.92rem; font-weight: 700; color: #0f172a; white-space: nowrap; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+  .rr-val.credit,
+  .rr-val.positive { color: #059669; }
+  .rr-val.debit,
+  .rr-val.negative { color: #dc2626; }
+  .rr-note { width: 100%; font-size: 0.75rem; color: #475569; padding-bottom: 4px; font-weight: 400; }
+
+  .highlight-row { background: #eff6ff; margin: 4px -4px; padding: 10px 8px !important; border-radius: 6px; border-bottom: none !important; }
+  .section-divider { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #3b82f6; padding: 14px 0 6px; border-bottom: 1px solid #e2e8f0; margin-bottom: 8px; }
+
+  /* ── Action row ── */
+  .action-row { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+  .action-row .btn-primary,
+  .action-row .btn-secondary { flex: 1; min-width: 160px; width: auto; text-align: center; }
+
+  /* ── Validation alert ── */
+  .validation-alert { display: none; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; color: #92400e; font-size: 0.875rem; font-weight: 500; }
+
+  /* ── Print ── */
+  @media print {
+    .no-print, #form-view, .action-row, #drawer-toggle { display: none !important; }
+    #results-view { display: block !important; }
+    #detailed-metrics-drawer { display: block !important; }
+    .summary-banner { background: #f0f4ff; border: 1px solid #c7d7fc; }
+    .card, .result-block { box-shadow: none; break-inside: avoid; background: #f8fafc !important; }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .specs-grid { grid-template-columns: 1fr; }
+    .main-container { padding: 20px 16px 40px; }
+    .card, .result-block { padding: 20px 18px; }
+    .summary-banner { padding: 22px 20px; gap: 24px; }
+    .summary-metric .metric-val { font-size: 1.55rem; }
+  }
+</style>
+</head>
+<body>
+<div class="main-container">
+
+  <!-- Page title -->
+  <h1 style="font-size: 1.55rem; font-weight: 700; color: #0f172a; margin-bottom: 6px;">Hobby Farm ROI Calculator</h1>
+  <p style="font-size: 0.875rem; color: #475569; margin-bottom: 32px;">Small-scale land acquisition, financing, infrastructure setup, and operating yield projections</p>
+
+  <!-- ===== FORM VIEW ===== -->
+  <div id="form-view">
+
+    <!-- Validation Alert -->
+    <div id="validation-alert" class="validation-alert">
+      Please enter a Land Purchase Price, Annual Production Volume, and Sale Price Per Unit before calculating. These three fields are required to generate accurate results.
+    </div>
+
+    <!-- Card 1: Land Acquisition & Financing -->
+    <div class="card">
+      <div class="card-title">Land Acquisition &amp; Financing</div>
+
+      <div class="specs-grid">
+        <div class="field-group">
+          <label class="field-label" for="land-price">Land Purchase Price</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="land-price" placeholder="e.g. 80000" min="0" step="1000">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="down-payment">Down Payment Amount</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="down-payment" placeholder="e.g. 20000" min="0" step="500">
+          </div>
+          <p class="field-note">Note: Most rural land lenders require a minimum 25% down payment to qualify.</p>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Loan Term</label>
+        <div class="badge-group" id="term-group">
+          <button type="button" class="badge-btn" onclick="setBadge('term-group', this, 10)">10 Years</button>
+          <button type="button" class="badge-btn active" onclick="setBadge('term-group', this, 15)">15 Years</button>
+          <button type="button" class="badge-btn" onclick="setBadge('term-group', this, 20)">20 Years</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Interest Rate</label>
+        <div class="badge-group" id="rate-group">
+          <button type="button" class="badge-btn" onclick="setBadge('rate-group', this, 7.25)">Excellent &mdash; 7.25%</button>
+          <button type="button" class="badge-btn active" onclick="setBadge('rate-group', this, 8.50)">Good &mdash; 8.50%</button>
+          <button type="button" class="badge-btn" onclick="setBadge('rate-group', this, 10.50)">Fair &mdash; 10.50%</button>
+        </div>
+        <p class="field-note">Rates reflect typical rural land financing tiers. Fair credit borrowers should plan for a 25%+ down payment floor to qualify with most agricultural lenders.</p>
+      </div>
+
+      <div class="specs-grid">
+        <div class="field-group">
+          <label class="field-label" for="prop-tax">Annual Property Tax</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="prop-tax" placeholder="e.g. 1400" min="0" step="100">
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-top: 4px;">
+        <label class="field-label">Equity Share Split</label>
+        <p class="field-note">Select how land financing costs are divided among ownership partners. Infrastructure startup costs remain pooled and are not divided by co-op share count.</p>
+        <div class="badge-group" style="margin-top: 8px;" id="coop-group">
+          <button type="button" class="badge-btn active" onclick="setBadge('coop-group', this, 1)">Sole Owner</button>
+          <button type="button" class="badge-btn" onclick="setBadge('coop-group', this, 2)">1/2 Share</button>
+          <button type="button" class="badge-btn" onclick="setBadge('coop-group', this, 3)">1/3 Share</button>
+          <button type="button" class="badge-btn" onclick="setBadge('coop-group', this, 4)">1/4 Share</button>
+          <button type="button" class="badge-btn" onclick="setBadge('coop-group', this, 5)">1/5 Share</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Site Improvements & Infrastructure -->
+    <div class="card">
+      <div class="card-title">Site Improvements &amp; Infrastructure</div>
+
+      <div class="specs-grid">
+        <div class="field-group">
+          <label class="field-label" for="clearing">Site Preparation &amp; Clearing</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="clearing" placeholder="e.g. 5000" min="0" step="500">
+          </div>
+          <p class="field-note">Plowing, stump removal, tilling</p>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="utilities">Production Utilities</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="utilities" placeholder="e.g. 3500" min="0" step="500">
+          </div>
+          <p class="field-note">Water wells, solar arrays, grid connections</p>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="shelters">Asset Shelters</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="shelters" placeholder="e.g. 12000" min="0" step="500">
+          </div>
+          <p class="field-note">Coops, barns, greenhouses, outbuildings</p>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="fencing">Perimeter Fencing &amp; Signage</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="fencing" placeholder="e.g. 3000" min="0" step="500">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Annual Overhead & Labor Salaries -->
+    <div class="card">
+      <div class="card-title">Annual Overhead &amp; Labor Salaries</div>
+
+      <div class="specs-grid">
+        <div class="field-group">
+          <label class="field-label" for="labor">Hired Labor Fund</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="labor" placeholder="e.g. 4500" min="0" step="500">
+          </div>
+          <p class="field-note">Annual or seasonal salaries and stipends for part-time help</p>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="insurance">Annual Farm Insurance</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="insurance" placeholder="e.g. 1200" min="0" step="100">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="supplies">Miscellaneous Operating Supplies</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="supplies" placeholder="e.g. 3500" min="0" step="500">
+          </div>
+          <p class="field-note">Feed, seeds, soil amendments, packaging, utilities</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Production Yield & Sales Projections -->
+    <div class="card">
+      <div class="card-title">Production Yield &amp; Sales Projections</div>
+
+      <div class="specs-grid">
+        <div class="field-group">
+          <label class="field-label" for="volume">Annual Production Volume</label>
+          <div class="input-wrapper">
+            <input type="number" id="volume" placeholder="e.g. 120" min="1" step="1" style="padding-left: 14px;">
+            <span class="input-affix suffix">units / yr</span>
+          </div>
+          <p class="field-note">Total units sold per year</p>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="unit-price">Sale Price Per Unit</label>
+          <div class="input-wrapper">
+            <span class="input-affix">$</span>
+            <input type="number" id="unit-price" placeholder="e.g. 45.00" min="0" step="0.25">
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="unit-name">Production Type Label</label>
+        <div class="input-wrapper">
+          <input type="text" id="unit-name" placeholder="e.g. Dozen Eggs, Lbs Mushrooms, CSA Shares, Bouquets" style="padding-left: 14px;">
+        </div>
+        <p class="field-note">Used as the production label throughout your results report</p>
+      </div>
+
+      <button type="button" class="btn-primary" onclick="calculate()" style="margin-top: 8px;">Calculate ROI</button>
+    </div>
+
+  </div><!-- /form-view -->
+
+  <!-- ===== RESULTS VIEW ===== -->
+  <div id="results-view">
+
+    <!-- Summary Banner -->
+    <div class="summary-banner">
+      <div class="summary-metric">
+        <span class="metric-sub">Net Annual Farm Profit / Loss</span>
+        <span class="metric-val" id="res-net-profit">--</span>
+      </div>
+      <div class="summary-metric">
+        <span class="metric-sub" id="res-breakeven-label">Break-Even Cost per Unit</span>
+        <span class="metric-val" id="res-breakeven">--</span>
+      </div>
+    </div>
+
+    <!-- Ownership Bottom Line -->
+    <div class="result-block" style="border: 1px solid #bfdbfe; background: #eff6ff;">
+      <div class="result-block-title" style="color: #1e40af; border-color: #bfdbfe;">Ownership Bottom Line</div>
+      <div class="rr-row">
+        <div class="rr-label">Gross Annual Revenue</div>
+        <div class="rr-val" id="res-gross-rev">--</div>
+      </div>
+      <div class="rr-row">
+        <div class="rr-label">Total Annual Operating Costs</div>
+        <div class="rr-val" id="res-total-ops">--</div>
+      </div>
+      <div class="rr-row highlight-row">
+        <div class="rr-label" style="font-weight: 700; color: #1e40af;">Net Annual Farm Profit / Loss</div>
+        <div class="rr-val" id="res-net2">--</div>
+      </div>
+      <div class="rr-row">
+        <div class="rr-label">Annual Land Loan Payment (Your Share)</div>
+        <div class="rr-val" id="res-annual-loan">--</div>
+      </div>
+      <div class="rr-row">
+        <div class="rr-label">Monthly Land Loan Payment (Your Share)</div>
+        <div class="rr-val" id="res-monthly-loan">--</div>
+      </div>
+      <div class="rr-row">
+        <div class="rr-label">Infrastructure Depreciation (Annual, 10-Yr Straight-Line)</div>
+        <div class="rr-val" id="res-depreciation">--</div>
+      </div>
+      <div class="rr-row">
+        <div class="rr-label" id="res-breakeven-row-label">Break-Even Cost per Unit</div>
+        <div class="rr-val" id="res-breakeven2">--</div>
+      </div>
+      <div class="rr-row">
+        <div class="rr-label">Equity Split</div>
+        <div class="rr-val" id="res-coop">--</div>
+      </div>
+    </div>
+
+    <!-- Accordion Toggle -->
+    <button type="button" id="drawer-toggle" class="btn-secondary no-print" style="width: 100%; margin: 12px 0;" onclick="toggleDetailDrawer()">
+      View Detailed Capital Closing &amp; Operational Ledger
+    </button>
+
+    <!-- Detailed Metrics Drawer -->
+    <div id="detailed-metrics-drawer" style="display: none;">
+
+      <!-- Capital Needed at Closing -->
+      <div class="result-block">
+        <div class="result-block-title">Capital Needed at Closing</div>
+        <div class="rr-row">
+          <div class="rr-label">Full Land Purchase Price</div>
+          <div class="rr-val" id="d-land-price">--</div>
+        </div>
+        <div class="rr-row">
+          <div class="rr-label">Down Payment (Your Share)</div>
+          <div class="rr-val" id="d-down">--</div>
+        </div>
+        <div class="rr-row">
+          <div class="rr-label">Loan Principal (Your Share)</div>
+          <div class="rr-val" id="d-principal">--</div>
+        </div>
+        <div class="rr-row">
+          <div class="rr-label">Total Startup Infrastructure</div>
+          <div class="rr-val" id="d-infra-total">--</div>
+        </div>
+        <div class="rr-row highlight-row">
+          <div class="rr-label" style="font-weight: 700; color: #1e40af;">Cash Needed at Closing</div>
+          <div class="rr-val" id="d-cash-closing">--</div>
+          <div class="rr-note">Down payment (your share) plus total startup infrastructure investment</div>
+        </div>
+      </div>
+
+      <!-- Detailed Startup Infrastructure Costs -->
+      <div class="result-block">
+        <div class="result-block-title">Startup Infrastructure Costs</div>
+        <div class="rr-row">
+          <div class="rr-label">Site Preparation &amp; Clearing</div>
+          <div class="rr-val" id="d-clearing">--</div>
+        </div>
+        <div class="rr-row">
+          <div class="rr-label">Production Utilities</div>
+          <div class="rr-val" id="d-utilities">--</div>
+        </div>
+        <div class="rr-row">
+          <div class="rr-label">Asset Shelters</div>
+          <div class="rr-val" id="d-shelters">--</div>
+        </div>
+        <div class="rr-row">
+          <div class="rr-label">Perimeter Fencing &amp; Signage</div>
+          <div class="rr-val" id="d-fencing">--</div>
+        </div>
+        <div class="rr-row highlight-row">
+          <div class="rr-label" style="font-weight: 700; color: #1e40af;">Combined Infrastructure Pool</div>
+          <div class="rr-val" id="d-infra-pool">--</div>
+        </div>
+      </div>
+
+      <!-- Detailed Annual Operational Expenses -->
+      <div class="result-block">
+        <div class="result-block-title">Annual Operational Expenses (Your Share)</div>
+        <div class="rr-row">
+          <div class="rr-label">Annual Land Loan Payment</div>
+          <div class="rr-val" id="d-annual-loan">--</div>
+        </div>
+        <div class="rr-row">
+          <div class="rr-label">Annual Property Tax</div>
+          <div class="rr-val" id="d-prop-tax">--</div>
+        </div>
+        <div class="rr-row">
+          <div class="rr-label">Infrastructure Depreciation (10-Yr Straight-Line)</div>
+          <div class="rr-val" id="d-depreciation">--</div>
+        </div>
+        <div class="rr-row">
+          <div class="rr-label">Hired Labor Fund</div>
+          <div class="rr-val" id="d-labor">--</div>
+        </div>
+        <div class="rr-row">
+          <div class="rr-label">Annual Farm Insurance</div>
+          <div class="rr-val" id="d-insurance">--</div>
+        </div>
+        <div class="rr-row">
+          <div class="rr-label">Miscellaneous Operating Supplies</div>
+          <div class="rr-val" id="d-supplies">--</div>
+        </div>
+        <div class="rr-row highlight-row">
+          <div class="rr-label" style="font-weight: 700; color: #1e40af;">Total Annual Operating Costs</div>
+          <div class="rr-val" id="d-total-ops">--</div>
+        </div>
+      </div>
+
+    </div><!-- /detailed-metrics-drawer -->
+
+    <!-- Dual Action Row -->
+    <div class="action-row no-print">
+      <button type="button" class="btn-primary" onclick="window.print()">Print Results</button>
+      <button type="button" class="btn-secondary" onclick="goBack()">Adjust Variables &amp; Recalculate</button>
+    </div>
+
+  </div><!-- /results-view -->
+
+</div><!-- /main-container -->
+
+<script>
+  /* ── Badge State ── */
+  var badgeValues = { 'term-group': 15, 'rate-group': 8.50, 'coop-group': 1 };
+
+  function setBadge(groupId, el, val) {
+    document.querySelectorAll('#' + groupId + ' .badge-btn').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    el.classList.add('active');
+    badgeValues[groupId] = val;
+  }
+
+  /* ── Currency Formatter ── */
+  function fmt(n, d) {
+    d = (d === undefined) ? 0 : d;
+    return '$' + n.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  /* ── Amortization ── */
+  function monthlyPayment(principal, annualRate, years) {
+    if (principal <= 0) return 0;
+    var r = annualRate / 100 / 12;
+    var n = years * 12;
+    if (r === 0) return principal / n;
+    return principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+  }
+
+  /* ── setVal: preserves base class, appends credit/debit state modifier safely ── */
+  function setVal(id, val, extraClass) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = val;
+    var base = el.classList.contains('metric-val') ? 'metric-val' : 'rr-val';
+    el.className = extraClass ? (base + ' ' + extraClass) : base;
+  }
+
+  /* ── Main Calculation ── */
+  function calculate() {
+    var landPrice  = parseFloat(document.getElementById('land-price').value)  || 0;
+    var downTotal  = parseFloat(document.getElementById('down-payment').value) || 0;
+    var propTax    = parseFloat(document.getElementById('prop-tax').value)     || 0;
+    var clearing   = parseFloat(document.getElementById('clearing').value)     || 0;
+    var utilities  = parseFloat(document.getElementById('utilities').value)    || 0;
+    var shelters   = parseFloat(document.getElementById('shelters').value)     || 0;
+    var fencing    = parseFloat(document.getElementById('fencing').value)      || 0;
+    var labor      = parseFloat(document.getElementById('labor').value)        || 0;
+    var insurance  = parseFloat(document.getElementById('insurance').value)    || 0;
+    var supplies   = parseFloat(document.getElementById('supplies').value)     || 0;
+    var volume     = parseFloat(document.getElementById('volume').value)       || 0;
+    var unitPrice  = parseFloat(document.getElementById('unit-price').value)   || 0;
+    var unitName   = document.getElementById('unit-name').value.trim()         || 'Unit';
+
+    /* ── Validation guard ── */
+    var alertBox = document.getElementById('validation-alert');
+    if (landPrice <= 0 || volume <= 0 || unitPrice <= 0) {
+      alertBox.style.display = 'block';
+      window.scrollTo(0, 0);
+      sendHeightUpdate();
+      return;
+    }
+    alertBox.style.display = 'none';
+
+    var termYears  = badgeValues['term-group'];
+    var rate       = badgeValues['rate-group'];
+    var coopShares = badgeValues['coop-group'];
+
+    /* Co-op splits — land financing costs */
+    var landShare  = landPrice  / coopShares;
+    var downShare  = downTotal  / coopShares;
+    var taxShare   = propTax    / coopShares;
+    var principal  = Math.max(0, landShare - downShare);
+
+    /* Loan amortization */
+    var monthly    = monthlyPayment(principal, rate, termYears);
+    var annualLoan = monthly * 12;
+
+    /* Infrastructure pool & straight-line depreciation */
+    var infraPool    = clearing + utilities + shelters + fencing;
+    var depreciation = infraPool / 10;
+
+    /* Annual operating total — operational costs divided by coopShares */
+    var totalOps = annualLoan
+                 + taxShare
+                 + (depreciation / coopShares)
+                 + (labor        / coopShares)
+                 + (insurance    / coopShares)
+                 + (supplies     / coopShares);
+
+    /* Revenue & profit */
+    var grossRev  = volume * unitPrice;
+    var netProfit = grossRev - totalOps;
+
+    /* Break-even */
+    var breakEven = totalOps / volume;
+
+    /* Cash at closing */
+    var cashClosing = downShare + infraPool;
+
+    /* Co-op label */
+    var coopLabels = {
+      1: 'Sole Owner (1/1)',
       2: '1/2 Share (2 Partners)',
       3: '1/3 Share (3 Partners)',
       4: '1/4 Share (4 Partners)',
@@ -93,6 +644,22 @@
 
   window.addEventListener('load', sendHeightUpdate);
   window.addEventListener('resize', sendHeightUpdate);
+
+  /* ── Parent layout height tracker ── */
+  (function() {
+    function sendHeight() {
+      window.parent.postMessage({
+        type: 'iframe-resize',
+        height: document.documentElement.scrollHeight
+      }, '*');
+    }
+    window.addEventListener('load', sendHeight);
+    new MutationObserver(sendHeight).observe(document.body, {
+      subtree: true,
+      childList: true,
+      attributes: true
+    });
+  })();
 </script>
 </body>
 </html>
