@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "version": "2.0.0",
+    "description": "Master ad switchboard. Each calculator route declares its own adType and payload. The ad engine reads this file on every page load and builds the sidebar layout automatically.",
+    "adTypes": ["single-skyscraper", "dual-stacked"],
+    "maintainer": "ad-ops"
+  },
+  "routes": {
+    "aircraft-cost-calculator": {
+      "adType": "single-skyscraper",
+      "imagePath": "ads/placeholders/generic-default.svg",
+      "linkUrl": "?app=contact",
+      "alt": "Advertisement"
+    },
+    "classic-car-restoration-calculator": {
+      "adType": "dual-stacked",
+      "slotA": {
+        "imagePath": "ads/placeholders/generic-default-square.svg",
+        "linkUrl": "?app=contact",
+        "alt": "Advertisement"
+      },
+      "slotB": {
+        "imagePath": "ads/placeholders/generic-default-square.svg",
+        "linkUrl": "?app=contact",
+        "alt": "Advertisement"
+      }
+    },
+    "hobby-farm-roi-calculator": {
+      "adType": "dual-stacked",
+      "slotA": {
+        "imagePath": "ads/placeholders/generic-default-square.svg",
+        "linkUrl": "?app=contact",
+        "alt": "Advertisement"
+      },
+      "slotB": {
+        "imagePath": "ads/placeholders/generic-default-square.svg",
+        "linkUrl": "?app=contact",
+        "alt": "Advertisement"
+      }
+    }
+  },
+  "defaults": {
+    "container": {
+      "width": 300,
+      "height": 600,
+      "homepageBg": "#f8fafc"
+    },
+    "slot": {
+      "imagePath": "ads/placeholders/generic-default.svg",
+      "linkUrl": "?app=contact",
+      "alt": "Advertisement"
+    }
+  }
+}
