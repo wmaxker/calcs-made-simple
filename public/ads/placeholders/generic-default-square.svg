@@ -1,0 +1,61 @@
+<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .primary { font-family: -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="300" height="300" fill="#ffffff"/>
+
+  <!-- Outer border -->
+  <rect x="0.5" y="0.5" width="299" height="299" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Inner hairline frame for premium layered feel -->
+  <rect x="12" y="12" width="276" height="276" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+
+  <!-- Abstract data node icon -->
+  <g transform="translate(150,108)">
+    <!-- connecting lines -->
+    <line x1="0" y1="0" x2="-26" y2="20" stroke="#cbd5e1" stroke-width="1.25"/>
+    <line x1="0" y1="0" x2="26" y2="20" stroke="#cbd5e1" stroke-width="1.25"/>
+    <line x1="0" y1="0" x2="0" y2="-28" stroke="#cbd5e1" stroke-width="1.25"/>
+    <line x1="-26" y1="20" x2="26" y2="20" stroke="#e2e8f0" stroke-width="1"/>
+
+    <!-- outer nodes -->
+    <circle cx="0" cy="-28" r="3.5" fill="#ffffff" stroke="#94a3b8" stroke-width="1.25"/>
+    <circle cx="-26" cy="20" r="3.5" fill="#ffffff" stroke="#94a3b8" stroke-width="1.25"/>
+    <circle cx="26" cy="20" r="3.5" fill="#ffffff" stroke="#94a3b8" stroke-width="1.25"/>
+
+    <!-- center accent node -->
+    <circle cx="0" cy="0" r="5.5" fill="#ffffff" stroke="#1E40AF" stroke-width="1.5"/>
+    <circle cx="0" cy="0" r="2" fill="#1E40AF"/>
+  </g>
+
+  <!-- Primary text -->
+  <text x="150" y="168" text-anchor="middle" class="primary"
+        font-size="15" font-weight="600" letter-spacing="1.1" fill="#0F172A">
+    SPONSOR THIS SLOT
+  </text>
+
+  <!-- Subtitle -->
+  <text x="150" y="190" text-anchor="middle" class="primary"
+        font-size="10.5" font-weight="400" letter-spacing="0.4" fill="#475569">
+    Premium Traffic • Direct Leads
+  </text>
+
+  <!-- Micro pill button -->
+  <g transform="translate(150,226)">
+    <rect x="-54" y="0" width="108" height="26" rx="13" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="0" y="17" text-anchor="middle" class="primary"
+          font-size="10" font-weight="600" letter-spacing="0.6" fill="#1E40AF">
+      Advertise Here
+    </text>
+  </g>
+
+  <!-- Faint footer micro-label -->
+  <text x="150" y="276" text-anchor="middle" class="primary"
+        font-size="8" font-weight="400" letter-spacing="1.5" fill="#cbd5e1">
+    AD SPACE
+  </text>
+</svg>
