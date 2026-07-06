@@ -4,14 +4,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Contact Us | Calcs Made Simple</title>
 
-<!-- Google Fonts: Inter -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
+  :root {
+    --color-bg: #ffffff;
+    --color-surface: #f8fafc;
+    --color-border: #cbd5e1;
+    --color-accent: #2563eb;
+    --color-text-hd: #0f172a;
+    --color-text-body: #475569;
+    --max-w: 560px;
+    --pad-x: clamp(1.5rem, 4vw, 2.5rem);
+    --pad-y: clamp(2rem, 5vw, 3rem);
+  }
+
+  @media (max-width: 960px) {
+    :root {
+      --max-w: 660px;
+      --pad-x: clamp(1rem, 4vw, 2rem);
+      --pad-y: clamp(1.5rem, 4vw, 3rem);
+    }
+  }
+
   /* ---------------------------------------------------
      CLEAN RESET
   --------------------------------------------------- */
@@ -23,30 +41,51 @@
 
   html, body {
     width: 100%;
-    height: 100%;
+    min-height: 640px;
+    height: auto;
+    overflow: visible;
   }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.5;
-    color: #0f172a;
-    background-color: #ffffff;
+    color: var(--color-text-hd);
+    background-color: var(--color-bg);
     -webkit-font-smoothing: antialiased;
   }
 
   /* ---------------------------------------------------
      LAYOUT
   --------------------------------------------------- */
-  article {
-    max-width: 560px;
+  .page-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .container {
+    width: 100%;
+    max-width: var(--max-w);
     margin: 0 auto;
-    padding: 48px 32px;
+    padding: var(--pad-y) var(--pad-x);
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   h1 {
     font-size: 28px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--color-text-hd);
     letter-spacing: -0.02em;
     margin-bottom: 8px;
   }
@@ -54,7 +93,7 @@
   .instructions {
     font-size: 15px;
     font-weight: 400;
-    color: #475569;
+    color: var(--color-text-body);
     margin-bottom: 32px;
   }
 
@@ -76,7 +115,7 @@
   label {
     font-size: 13px;
     font-weight: 600;
-    color: #0f172a;
+    color: var(--color-text-hd);
   }
 
   input[type="text"],
@@ -84,9 +123,9 @@
   textarea {
     font-family: inherit;
     font-size: 14px;
-    color: #0f172a;
-    background-color: #f8fafc;
-    border: 1px solid #cbd5e1;
+    color: var(--color-text-hd);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 12px 14px;
     outline: none;
@@ -103,7 +142,7 @@
   input[type="text"]:focus,
   input[type="email"]:focus,
   textarea:focus {
-    border-color: #2563eb;
+    border-color: var(--color-accent);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
   }
 
@@ -118,7 +157,7 @@
     font-size: 15px;
     font-weight: 600;
     color: #ffffff;
-    background-color: #2563eb;
+    background-color: var(--color-accent);
     border: none;
     border-radius: 8px;
     padding: 13px 20px;
@@ -147,7 +186,7 @@
     display: none;
     font-size: 15px;
     font-weight: 500;
-    color: #0f172a;
+    color: var(--color-text-hd);
     background-color: #f0fdf4;
     border: 1px solid #86efac;
     border-radius: 8px;
@@ -169,39 +208,44 @@
 </head>
 <body>
 
-<article>
-  <h1>Contact Us</h1>
-  <p class="instructions">Please type your message in the box below.</p>
+<div class="page-wrapper">
+  <div class="container">
+    <h1>Contact Us</h1>
+    <p class="instructions">Please type your message in the box below.</p>
 
-  <!-- Contact form: submits securely to Static Forms API -->
-  <form id="contact-form" action="https://staticforms.dev" method="POST">
+    <!-- Contact form: submits securely to Static Forms API -->
+    <form id="contact-form" action="https://staticforms.dev" method="POST">
 
-    <!-- Static Forms secure access key -->
-    <input type="hidden" name="accessKey" value="sf_a5742517601e41fcac040d71">
+      <!-- Static Forms secure access key -->
+      <input type="hidden" name="accessKey" value="sf_a5742517601e41fcac040d71">
 
-    <div class="field-group">
-      <label for="name">Name</label>
-      <input type="text" id="name" name="name" placeholder="Your full name" required>
-    </div>
+      <!-- Honeypot anti-spam field: hidden from real users, traps bots -->
+      <input type="text" name="honeypot" style="display:none !important;" tabindex="-1" autocomplete="off">
 
-    <div class="field-group">
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" placeholder="you@example.com" required>
-    </div>
+      <div class="field-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Your full name" required>
+      </div>
 
-    <div class="field-group">
-      <label for="message">Message</label>
-      <textarea id="message" name="message" placeholder="How can we help?" required></textarea>
-    </div>
+      <div class="field-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+      </div>
 
-    <button type="submit" class="submit-btn" id="submit-btn">Submit</button>
+      <div class="field-group">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" placeholder="How can we help?" required></textarea>
+      </div>
 
-    <p id="error-message">Something went wrong sending your message. Please try again.</p>
-  </form>
+      <button type="submit" class="submit-btn" id="submit-btn">Submit</button>
 
-  <!-- Success confirmation, hidden until form submits successfully -->
-  <p id="success-message">Thank you, your message has been sent.</p>
-</article>
+      <p id="error-message">Something went wrong sending your message. Please try again.</p>
+    </form>
+
+    <!-- Success confirmation, hidden until form submits successfully -->
+    <p id="success-message">Thank you, your message has been sent.</p>
+  </div>
+</div>
 
 <script>
   // ---------------------------------------------------
@@ -218,6 +262,13 @@
     form.addEventListener('submit', function (event) {
       // Prevent default full-page/parent-tab submission behavior
       event.preventDefault();
+
+      // Passive honeypot check: if the hidden field was filled, silently
+      // treat this as spam and skip the real submission
+      const honeypotField = form.querySelector('input[name="honeypot"]');
+      if (honeypotField && honeypotField.value !== '') {
+        return;
+      }
 
       // Hide any prior error state and lock the button while sending
       errorMessage.style.display = 'none';
@@ -258,6 +309,9 @@
   })();
 </script>
 
+<script>
+(function(){function s(){window.parent.postMessage({type:'iframe-resize',height:document.documentElement.scrollHeight},'*')}window.addEventListener('load',s);new MutationObserver(s).observe(document.body,{subtree:true,childList:true,attributes:true});})();
+</script>
+
 </body>
 </html>
-
