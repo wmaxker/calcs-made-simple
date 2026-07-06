@@ -1,1 +1,297 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Terms of Service — Calcs Made Simple</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --color-bg:        #f8f9fa;
+      --color-surface:   #ffffff;
+      --color-border:    #e4e7eb;
+      --color-accent:    #2563eb;
+      --color-accent-lt: #eff4ff;
+      --color-text-hd:   #0f172a;
+      --color-text-body: #374151;
+      --color-text-meta: #6b7280;
+      --color-rule:      #e4e7eb;
+
+      --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji";
+
+      --max-w: 760px;
+      --pad-x: clamp(1.25rem, 5vw, 3rem);
+      --pad-y: clamp(2rem, 6vw, 4rem);
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 640px;
+      height: auto;
+      overflow: visible;
+    }
+
+    body {
+      font-family: var(--font-ui);
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--color-text-body);
+      background: var(--color-bg);
+    }
+
+    /* ── Page wrapper ── */
+    .page-wrapper {
+      width: 100%;
+      min-height: 640px;
+      height: auto;
+      padding: var(--pad-y) var(--pad-x);
+      overflow: visible;
+    }
+
+    /* ── Content container ── */
+    .container {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: clamp(2rem, 6vw, 3.5rem) clamp(1.5rem, 5vw, 3rem);
+    }
+
+    /* ── Document header ── */
+    .doc-header {
+      padding-bottom: 2rem;
+      border-bottom: 2px solid var(--color-rule);
+      margin-bottom: 2.5rem;
+    }
+
+    .doc-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      background: var(--color-accent-lt);
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+
+    .doc-title {
+      font-size: clamp(1.6rem, 4vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--color-text-hd);
+      line-height: 1.2;
+      margin-bottom: 0.6rem;
+    }
+
+    .doc-meta {
+      font-size: 0.875rem;
+      color: var(--color-text-meta);
+    }
+
+    .doc-meta strong {
+      color: var(--color-text-body);
+      font-weight: 600;
+    }
+
+    /* ── Sections ── */
+    .section {
+      margin-bottom: 2.25rem;
+    }
+
+    .section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .section-num {
+      flex-shrink: 0;
+      width: 1.75rem;
+      height: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-accent);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      border-radius: 50%;
+      line-height: 1;
+      margin-top: 0.1rem;
+    }
+
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--color-text-hd);
+      letter-spacing: -0.01em;
+    }
+
+    .section-body {
+      padding-left: 2.5rem;
+      font-size: 0.9375rem;
+      color: var(--color-text-body);
+    }
+
+    /* ── Divider between sections ── */
+    .section + .section {
+      padding-top: 2.25rem;
+      border-top: 1px solid var(--color-rule);
+    }
+
+    /* ── Footer note ── */
+    .doc-footer {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--color-rule);
+      font-size: 0.8125rem;
+      color: var(--color-text-meta);
+      text-align: center;
+    }
+
+    .doc-footer a {
+      color: var(--color-accent);
+      text-decoration: none;
+    }
+
+    .doc-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Fade-up entrance animation ── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .container {
+      animation: fadeUp 0.6s ease-out both;
+    }
+
+    /* ── 960px breakpoint: accommodate right 300x600 ad column ── */
+    @media (max-width: 960px) {
+      :root {
+        --max-w: 660px;
+        --pad-x: clamp(1rem, 4vw, 2rem);
+        --pad-y: clamp(1.5rem, 4vw, 3rem);
+      }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 540px) {
+      .container {
+        border-radius: 8px;
+      }
+
+      .section-body {
+        padding-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <div class="container">
+
+      <!-- Header -->
+      <header class="doc-header">
+        <div class="doc-eyebrow">Legal Document</div>
+        <h1 class="doc-title">Terms of Service</h1>
+        <p class="doc-meta"><strong>Effective Date:</strong> June 23, 2026</p>
+      </header>
+
+      <!-- Section 1 -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-num">1</div>
+          <h2 class="section-title">Acceptance of Terms</h2>
+        </div>
+        <div class="section-body">
+          <p>By accessing or using the Calcs Made Simple website and its integrated calculation engines, you express your full agreement to these Terms of Service. If you do not agree to these terms, you must immediately cease using this website.</p>
+        </div>
+      </section>
+
+      <!-- Section 2 -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-num">2</div>
+          <h2 class="section-title">"As-Is" Website Availability and Device Protection Disclaimer</h2>
+        </div>
+        <div class="section-body">
+          <p>Calcs Made Simple is provided entirely on an "as-is" and "as-available" basis. We do not guarantee that this website will be uninterrupted, error-free, or completely secure from external internet threats. By using this platform, you explicitly agree that the website owner is not responsible or legally liable for any direct or indirect damage to your computer hardware, operating system corruptions, loss of local device data, or malware infections alleged to have occurred while browsing this site. You access this internet platform completely at your own discretion and sole risk.</p>
+        </div>
+      </section>
+
+      <!-- Section 3 -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-num">3</div>
+          <h2 class="section-title">No Financial Advice or Liability for Calculation Estimates</h2>
+        </div>
+        <div class="section-body">
+          <p>The mathematical models, projections, and cost estimates generated by our tools are strictly for general educational and scoping purposes. Nothing on this website constitutes formal financial, tax, investment, or legal advice. Calculated outputs are for estimates only and are not guaranteed for absolute mathematical precision. You assume 100% personal and financial accountability for independently auditing and verifying all figures before initiating any capital investments, business purchases, or real-world operational changes. The website owner is completely exempt from liability for any financial losses, bad business decisions, or budget overruns resulting from treating these calculator outputs as absolute truth.</p>
+        </div>
+      </section>
+
+      <!-- Section 4 -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-num">4</div>
+          <h2 class="section-title">Third-Party Infrastructure and Hosting Exemptions</h2>
+        </div>
+        <div class="section-body">
+          <p>This website runs on third-party cloud hosting servers and routes data across the public internet. The website owner does not control, and is not responsible for, any malicious activity, server hacking, or data traffic disruptions caused by outside entities or third-party infrastructure providers.</p>
+        </div>
+      </section>
+
+      <!-- Section 5 -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-num">5</div>
+          <h2 class="section-title">Intellectual Property and Right to Modify</h2>
+        </div>
+        <div class="section-body">
+          <p>The unique design, master layout frameworks, code algorithms, and calculator structures are the intellectual property of Calcs Made Simple. We reserve the right to add, modify, or remove any calculator engine or page from this site at any moment without prior notice or liability.</p>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="doc-footer">
+        &copy; 2026 Calcs Made Simple &mdash; All rights reserved.
+      </footer>
+
+    </div><!-- /.container -->
+  </div><!-- /.page-wrapper -->
+  <script>
+(function(){function s(){window.parent.postMessage({type:'iframe-resize',height:document.documentElement.scrollHeight},'*')}window.addEventListener('load',s);new MutationObserver(s).observe(document.body,{subtree:true,childList:true,attributes:true});})();
+  </script>
+</body>
+</html>
+
