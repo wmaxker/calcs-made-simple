@@ -4,53 +4,90 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About Us</title>
+<title>About Us | Calcs Made Simple</title>
+<meta name="description" content="Learn about Calcs Made Simple, offering free, privacy-first financial calculators for cars, aircraft, hobby farms, and more.">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <style>
-  /* Global reset — keeps this iframe panel visually isolated and consistent with host template */
-  *, *::before, *::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  :root{
+    --slate-900:#0f172a;
+    --slate-600:#475569;
+    --slate-200:#e2e8f0;
+    --bg:#ffffff;
   }
-
-  html, body {
-    height: 100%;
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;
+    padding:0;
+    background:var(--bg);
   }
-
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    line-height: 1.6;
-    color: #475569; /* slate-600 body copy */
-    background: #ffffff;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  body{
+    font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    color:var(--slate-600);
+    line-height:1.65;
   }
-
-  article {
-    padding: 40px 36px;
-    max-width: 720px;
+  .page-wrap{
+    max-width:960px;
+    margin:0 auto;
+    padding:48px 24px 64px;
   }
-
-  h1 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    line-height: 1.3;
-    color: #0f172a; /* slate-900 heading */
-    margin-bottom: 16px;
-    letter-spacing: -0.01em;
+  article{
+    max-width:680px;
   }
-
-  p {
-    font-size: 1rem;
-    color: #475569;
+  h1{
+    color:var(--slate-900);
+    font-size:2rem;
+    font-weight:700;
+    letter-spacing:-0.02em;
+    margin:0 0 20px;
+    line-height:1.2;
+  }
+  p{
+    font-size:1.0625rem;
+    margin:0 0 16px;
+  }
+  .divider{
+    width:48px;
+    height:3px;
+    background:var(--slate-200);
+    border:none;
+    margin:0 0 28px;
+  }
+  @media (max-width:600px){
+    .page-wrap{padding:32px 16px 48px;}
+    h1{font-size:1.6rem;}
+    p{font-size:1rem;}
   }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About Calcs Made Simple",
+  "url": "https://calcsmadesimple.com/about-us-info.html",
+  "description": "Calcs Made Simple provides free, serverless, privacy-first financial calculators that help people estimate upfront and ongoing costs for major purchases and hobbies, including cars, aircraft, and hobby farms.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Calcs Made Simple",
+    "url": "https://calcsmadesimple.com"
+  }
+}
+</script>
 </head>
 <body>
-  <article>
-    <h1>About Calcs Made Simple</h1>
-    <p>We offer straightforward, intuitive financial calculators designed to simplify your everyday life. Whether you are contemplating a classic car restoration, evaluating an aircraft purchase, or investing in a hobby farm, our tools help you accurately estimate your initial and ongoing costs completely upfront.</p>
-  </article>
+<div class="page-wrap">
+<main>
+<article>
+<h1>About Calcs Made Simple</h1>
+<hr class="divider">
+<p>We offer straightforward, intuitive financial calculators designed to simplify your everyday life. Whether you are contemplating a classic car restoration, evaluating an aircraft purchase, or investing in a hobby farm, our tools help you accurately estimate your initial and ongoing costs completely upfront.</p>
+</article>
+</main>
+</div>
+<script>
+(function(){function s(){window.parent.postMessage({type:'iframe-resize',height:document.documentElement.scrollHeight},'*')}window.addEventListener('load',s);new MutationObserver(s).observe(document.body,{subtree:true,childList:true,attributes:true});})();
+</script>
 </body>
 </html>
-
