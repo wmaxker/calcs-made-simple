@@ -15,7 +15,7 @@
     "classic-car-restoration-calculator": {
       "adType": "single-skyscraper",
       "slotA": {
-        "imagePath": "ads/placeholders/generic-default-square.svg",
+        "imagePath": "ads/placeholders/generic-default.svg",
         "linkUrl": "?app=contact",
         "alt": "Sponsor This Slot. Premium Traffic, Direct Leads. Advertise Here."
       },
@@ -28,9 +28,9 @@
     "hobby-farm-roi-calculator": {
       "adType": "single-skyscraper",
       "slotA": {
-        "imagePath": "ads/placeholders/generic-default-square.svg",
+        "imagePath": "ads/placeholders/generic-default.svg",
         "linkUrl": "?app=contact",
-        "alt": "Advertisement"
+        "alt": "Sponsor This Slot. Premium Traffic, Direct Leads. Advertise Here."
       },
       "slotB": {
         "imagePath": "ads/placeholders/generic-default-square.svg",
