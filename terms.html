@@ -4,6 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Terms of Service — Calcs Made Simple</title>
   <style>
     *, *::before, *::after {
@@ -176,6 +179,31 @@
       text-decoration: underline;
     }
 
+    /* ── Fade-up entrance animation ── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .container {
+      animation: fadeUp 0.6s ease-out both;
+    }
+
+    /* ── 960px breakpoint: accommodate right 300x600 ad column ── */
+    @media (max-width: 960px) {
+      :root {
+        --max-w: 660px;
+        --pad-x: clamp(1rem, 4vw, 2rem);
+        --pad-y: clamp(1.5rem, 4vw, 3rem);
+      }
+    }
+
     /* ── Responsive ── */
     @media (max-width: 540px) {
       .container {
@@ -261,5 +289,8 @@
 
     </div><!-- /.container -->
   </div><!-- /.page-wrapper -->
+  <script>
+(function(){function s(){window.parent.postMessage({type:'iframe-resize',height:document.documentElement.scrollHeight},'*')}window.addEventListener('load',s);new MutationObserver(s).observe(document.body,{subtree:true,childList:true,attributes:true});})();
+  </script>
 </body>
 </html>
