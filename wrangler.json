@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "calcs-made-simple-live",
+  "name": "calcs-made-simple-web",
   "compatibility_date": "2026-07-01",
   "assets": {
     "directory": "./public"
