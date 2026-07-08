@@ -10,10 +10,10 @@ function renderAdvertisement(configData, currentSlug) {
     // 2. Fetch the specific configuration block for this route or fallback to defaults
     const routeConfig = configData.routes[fullRouteName] || configData.defaults.slot;
     
-    // 3. Find the primary ad container element in your HTML layout
-    const containerElement = document.getElementById('ad-slot-container');
+    // 3. FIXED: Target the accurate container ID matching your index.html sidebar block
+    const containerElement = document.getElementById('sidebar-ad-container');
     if (!containerElement) {
-        console.warn("Ad element container ('ad-slot-container') not found on screen.");
+        console.warn("Ad element container ('sidebar-ad-container') not found on screen.");
         return;
     }
     
