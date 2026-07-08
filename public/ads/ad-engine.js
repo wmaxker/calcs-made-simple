@@ -13,23 +13,49 @@
   "routes": {
     "aircraft-cost-calculator": {
       "adType": "single-skyscraper",
-      "imagePath": "ads/placeholders/generic-default.svg",
-      "linkUrl": "?app=contact",
+      "imagePath": "/ads/placeholders/generic-default.svg",
+      "linkUrl": "/?app=contact",
       "alt": "Advertisement"
     },
     "classic-car-restoration-calculator": {
       "adType": "dual-stacked",
-      "slotA": { "imagePath": "ads/placeholders/generic-default-square.svg", "linkUrl": "?app=contact", "alt": "Advertisement" },
-      "slotB": { "imagePath": "ads/placeholders/generic-default-square.svg", "linkUrl": "?app=contact", "alt": "Advertisement" }
+      "slotA": {
+        "imagePath": "/ads/placeholders/generic-default-square.svg",
+        "linkUrl": "/?app=contact",
+        "alt": "Advertisement"
+      },
+      "slotB": {
+        "imagePath": "/ads/placeholders/generic-default-square.svg",
+        "linkUrl": "/?app=contact",
+        "alt": "Advertisement"
+      }
     },
     "hobby-farm-roi-calculator": {
       "adType": "dual-stacked",
-      "slotA": { "imagePath": "ads/placeholders/generic-default-square.svg", "linkUrl": "?app=contact", "alt": "Advertisement" },
-      "slotB": { "imagePath": "ads/placeholders/generic-default-square.svg", "linkUrl": "?app=contact", "alt": "Advertisement" }
+      "slotA": {
+        "imagePath": "/ads/placeholders/generic-default-square.svg",
+        "linkUrl": "/?app=contact",
+        "alt": "Advertisement"
+      },
+      "slotB": {
+        "imagePath": "/ads/placeholders/generic-default-square.svg",
+        "linkUrl": "/?app=contact",
+        "alt": "Advertisement"
+      }
     }
   },
   "defaults": {
-    "container": { "width": 300, "height": 600, "mobileHeight": 250, "mobileBreakpoint": 960, "homepageBg": "#f8fafc" },
-    "slot": { "imagePath": "ads/placeholders/generic-default.svg", "linkUrl": "?app=contact", "alt": "Advertisement" }
+    "container": {
+      "width": 300,
+      "height": 600,
+      "mobileHeight": 250,
+      "mobileBreakpoint": 960,
+      "homepageBg": "#f8fafc"
+    },
+    "slot": {
+      "imagePath": "/ads/placeholders/generic-default.svg",
+      "linkUrl": "/?app=contact",
+      "alt": "Advertisement"
+    }
   }
 }
