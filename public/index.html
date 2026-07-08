@@ -377,62 +377,64 @@
              * OPT 7: Mobile smooth scroll — glides viewport down to .main-content-card
              * so the user sees the tool load immediately after clicking a sidebar button on narrow screens.
              */
-            if (window.innerWidth <= 960) {
-                const card = document.querySelector('.main-content-card');
-                if (card) {
-                    window.scrollTo({ top: card.offsetTop - 16, behavior: 'smooth' });
-                }
-            }
-        }
+               if (window.innerWidth <= 960) { 
+        const card = document.querySelector('.main-content-card'); 
+        if (card) { 
+            window.scrollTo({ top: card.offsetTop - 16, behavior: 'smooth' }); 
+        } 
+    } 
+} 
 
-        /* CHANGE 3 / OPT 4: showWelcome toggles display state only — no innerHTML rebuild */
-        function showWelcome() {
-            activeSlug = null;
-            document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+/* CHANGE 3 / OPT 4: showWelcome toggles display state only — no innerHTML rebuild */ 
+function showWelcome() { 
+    activeSlug = null; 
+    document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active')); 
+    
+    /* Hide iframe, reset its location cleanly */ 
+    const iframe = document.getElementById('app-viewport'); 
+    iframe.style.display = 'none'; 
+    iframe.style.height = 'auto'; 
+    try { 
+        iframe.contentWindow.location.replace('about:blank'); 
+    } catch(e) { 
+        iframe.src = 'about:blank'; 
+    } 
+    
+    /* OPT 4: Restore the pre-baked static welcome panel via display toggle only */ 
+    const wc = document.getElementById('welcome-container'); 
+    wc.style.display = 'flex'; 
 
-            /* Hide iframe, reset its location cleanly */
-            const iframe = document.getElementById('app-viewport');
-            iframe.style.display = 'none';
-            iframe.style.height = 'auto';
-            try {
-                iframe.contentWindow.location.replace('about:blank');
-            } catch(e) {
-                iframe.src = 'about:blank';
-            }
+    /* FIXED: Automatically refresh the homepage ad instead of destroying it completely */
+    if (typeof renderAdvertisement === 'function' && typeof adConfig !== 'undefined') {
+        renderAdvertisement(adConfig, 'homepage');
+    }
+} 
 
-            /* OPT 4: Restore the pre-baked static welcome panel via display toggle only */
-            const wc = document.getElementById('welcome-container');
-            wc.style.display = 'flex';
+function router() { 
+    const slug = new URLSearchParams(window.location.search).get('app'); 
+    slug ? loadApp(slug) : showWelcome(); 
+} 
 
-            /* Reset ad container to clean blank state on homepage */
-            const adContainer = document.getElementById('sidebar-ad-container');
-            adContainer.innerHTML = '';
-            adContainer.style.background = '#f8fafc';
-            adContainer.style.border = 'none';
-        }
+/* 
+ * OPT 1: Ad engine race condition fix. 
+ * buildSidebar() runs immediately so the sidebar renders without delay. 
+ * router() is deferred to DOMContentLoaded to guarantee ads/ad-engine.js has 
+ * finished parsing before initAdEngine() could be called by loadApp() on deep-linked traffic. 
+ */ 
+buildSidebar(); 
 
-        function router() {
-            const slug = new URLSearchParams(window.location.search).get('app');
-            slug ? loadApp(slug) : showWelcome();
-        }
+if (document.readyState === 'loading') { 
+    document.addEventListener('DOMContentLoaded', router); 
+} else { 
+    /* DOMContentLoaded already fired (e.g. script is deferred or page loaded fast) */ 
+    router(); 
+} 
 
-        /*
-         * OPT 1: Ad engine race condition fix.
-         * buildSidebar() runs immediately so the sidebar renders without delay.
-         * router() is deferred to DOMContentLoaded to guarantee ads/ad-engine.js has
-         * finished parsing before initAdEngine() could be called by loadApp() on deep-linked traffic.
-         */
-        buildSidebar();
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', router);
-        } else {
-            /* DOMContentLoaded already fired (e.g. script is deferred or page loaded fast) */
-            router();
-        }
-        window.addEventListener('popstate', router);
-    </script>
-<script src="./ads/ad-control.js"></script>
-<script src="./ads/ad-engine.js"></script>
-</body>
+window.addEventListener('popstate', router); 
+</script> 
+
+<!-- FIXED: Loaded engine first, control second, and removed the broken relative dots -->
+<script src="/ads/ad-engine.js"></script> 
+<script src="/ads/ad-control.js"></script> 
+</body> 
 </html>
-
