@@ -8,21 +8,21 @@
   "routes": {
     "aircraft-cost-calculator": {
       "adType": "single-skyscraper",
-      "imagePath": "ads/placeholders/generic-default.svg",
+      "imagePath": "./ads/placeholders/generic-default.svg",
       "linkUrl": "?app=contact",
       "alt": "Sponsor This Slot. Premium Traffic, Direct Leads. Advertise Here."
     },
     "classic-car-restoration-calculator": {
       "adType": "single-skyscraper",
-        "imagePath": "ads/placeholders/generic-default.svg",
-        "linkUrl": "?app=contact",
-        "alt": "Sponsor This Slot. Premium Traffic, Direct Leads. Advertise Here."
+      "imagePath": "./ads/placeholders/generic-default.svg",
+      "linkUrl": "?app=contact",
+      "alt": "Sponsor This Slot. Premium Traffic, Direct Leads. Advertise Here."
     },
     "hobby-farm-roi-calculator": {
       "adType": "single-skyscraper",
-        "imagePath": "ads/placeholders/generic-default.svg",
-        "linkUrl": "?app=contact",
-        "alt": "Sponsor This Slot. Premium Traffic, Direct Leads. Advertise Here."
+      "imagePath": "./ads/placeholders/generic-default.svg",
+      "linkUrl": "?app=contact",
+      "alt": "Sponsor This Slot. Premium Traffic, Direct Leads. Advertise Here."
     }
   },
   "defaults": {
@@ -32,7 +32,7 @@
       "homepageBg": "#f8fafc"
     },
     "slot": {
-      "imagePath": "ads/placeholders/generic-default.svg",
+      "imagePath": "./ads/placeholders/generic-default.svg",
       "linkUrl": "?app=contact",
       "alt": "Advertisement"
     }
