@@ -1,61 +1,72 @@
-{
-  "_meta": {
-    "version": "2.2.0",
-    "description": "Master ad switchboard.",
-    "adTypes": ["single-skyscraper", "dual-stacked"],
-    "maintainer": "ad-ops"
-  },
-  "slugMap": {
-    "aircraft": "aircraft-cost-calculator",
-    "classic-car": "classic-car-restoration-calculator",
-    "hobby-farm": "hobby-farm-roi-calculator"
-  },
-  "routes": {
-    "aircraft-cost-calculator": {
-      "adType": "single-skyscraper",
-      "imagePath": "/ads/placeholders/generic-default.svg",
-      "linkUrl": "/?app=contact",
-      "alt": "Advertisement"
-    },
-    "classic-car-restoration-calculator": {
-      "adType": "dual-stacked",
-      "slotA": {
-        "imagePath": "/ads/placeholders/generic-default-square.svg",
-        "linkUrl": "/?app=contact",
-        "alt": "Advertisement"
-      },
-      "slotB": {
-        "imagePath": "/ads/placeholders/generic-default-square.svg",
-        "linkUrl": "/?app=contact",
-        "alt": "Advertisement"
-      }
-    },
-    "hobby-farm-roi-calculator": {
-      "adType": "dual-stacked",
-      "slotA": {
-        "imagePath": "/ads/placeholders/generic-default-square.svg",
-        "linkUrl": "/?app=contact",
-        "alt": "Advertisement"
-      },
-      "slotB": {
-        "imagePath": "/ads/placeholders/generic-default-square.svg",
-        "linkUrl": "/?app=contact",
-        "alt": "Advertisement"
-      }
+/**
+ * Renders the advertisement graphic based on the current page route and config data.
+ * @param {Object} configData - The complete JSON configuration object for ads.
+ * @param {string} currentSlug - The current active page identifier (e.g., 'aircraft').
+ */
+function renderAdvertisement(configData, currentSlug) {
+    // 1. Resolve short slugs to full route names using the slugMap
+    const fullRouteName = configData.slugMap[currentSlug] || currentSlug;
+    
+    // 2. Fetch the specific configuration block for this route or fallback to defaults
+    const routeConfig = configData.routes[fullRouteName] || configData.defaults.slot;
+    
+    // 3. Find the primary ad container element in your HTML layout
+    const containerElement = document.getElementById('ad-slot-container');
+    if (!containerElement) {
+        console.warn("Ad element container ('ad-slot-container') not found on screen.");
+        return;
     }
-  },
-  "defaults": {
-    "container": {
-      "width": 300,
-      "height": 600,
-      "mobileHeight": 250,
-      "mobileBreakpoint": 960,
-      "homepageBg": "#f8fafc"
-    },
-    "slot": {
-      "imagePath": "/ads/placeholders/generic-default.svg",
-      "linkUrl": "/?app=contact",
-      "alt": "Advertisement"
+    
+    // Clear out any previous contents in the slot before appending new elements
+    containerElement.innerHTML = '';
+
+    // 4. Handle "dual-stacked" ad structures (two smaller square blocks)
+    if (routeConfig.adType === "dual-stacked") {
+        const wrapperDiv = document.createElement('div');
+        wrapperDiv.className = "flex flex-col gap-4"; // Beautiful Tailwind styling layout
+        
+        wrapperDiv.appendChild(createAdLinkElement(routeConfig.slotA));
+        wrapperDiv.appendChild(createAdLinkElement(routeConfig.slotB));
+        containerElement.appendChild(wrapperDiv);
+    } 
+    // 5. Handle "single-skyscraper" or standard fallback structures (one tall block)
+    else {
+        containerElement.appendChild(createAdLinkElement(routeConfig));
     }
-  }
 }
+
+/**
+ * Helper function to create individual HTML link elements around the SVG graphic.
+ * Handles automatic detection of local vs external sponsor links.
+ */
+function createAdLinkElement(slotData) {
+    const adLink = document.createElement('a');
+    adLink.href = slotData.linkUrl;
+    adLink.className = "block overflow-hidden transition-opacity hover:opacity-90";
+
+    // SMART CHECK: Opens true external sponsors in a safe, separate browser tab.
+    // Keeps local items (like "/?app=contact") flowing seamlessly in the same window.
+    if (slotData.linkUrl.startsWith('http')) {
+        adLink.setAttribute('target', '_blank');
+        adLink.setAttribute('rel', 'noopener noreferrer'); 
+    }
+
+    // Build the underlying HTML image template using the strict absolute image asset paths
+    adLink.innerHTML = `
+        <img 
+            src="${slotData.imagePath}" 
+            alt="${slotData.alt || 'Advertisement'}" 
+            class="w-full h-auto max-w-full object-contain pointer-events-none"
+            loading="lazy"
+        />
+    `;
+
+    return adLink;
+}
+
+// Ensure the code safely waits for HTML5 parsing to complete before firing execution
+document.addEventListener("DOMContentLoaded", () => {
+    // Example deployment initiation sequence. 
+    // Pass your master JSON config payload alongside your active page route variable here.
+    // renderAdvertisement(yourLoadedJsonData, 'classic-car');
+});
