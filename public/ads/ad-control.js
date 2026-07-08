@@ -1,4 +1,4 @@
-{
+const adConfig = {
   "_meta": {
     "version": "2.0.0",
     "description": "Master ad switchboard. Each calculator route declares its own adType and payload. The ad engine reads this file on every page load and builds the sidebar layout automatically.",
