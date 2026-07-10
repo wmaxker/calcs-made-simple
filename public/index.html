@@ -232,14 +232,27 @@
            })();
            -----------------------------------------------------------------------
         ===================================================================== */
-        window.addEventListener('message', function(event) {
-            if (event.data && event.data.type === 'iframe-resize' && typeof event.data.height === 'number') {
-                var iframe = document.getElementById('app-viewport');
-                if (iframe) {
-                    iframe.style.height = event.data.height + 'px';
-                }
-            }
-        });
+       window.addEventListener('message', function(event) {
+  if (event.data) {
+    // 1. Catches messages from Classic Car and Airplane calculators
+    if (event.data.type === 'iframe-resize' && typeof event.data.height === 'number') {
+      var iframe = document.getElementById('app-viewport');
+      if (iframe) {
+        iframe.style.height = event.data.height + 'px';
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scrolls parent frame up
+      }
+    }
+    // 2. Catches messages from the Hobby Farm calculator layout
+    if (event.data.type === 'resize-iframe' && typeof event.data.height === 'number') {
+      var iframe = document.getElementById('app-viewport');
+      if (iframe) {
+        iframe.style.height = event.data.height + 'px';
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scrolls parent frame up
+      }
+    }
+  }
+});
+
 
         function buildSidebar() {
             const el = document.getElementById('sidebar-inner');
