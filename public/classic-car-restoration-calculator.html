@@ -562,33 +562,30 @@
     setText('res-insurance',       fmt(insurance));
     setText('res-annual-carrying', fmt(annualCarrying));
 
-    // Reset drawer to closed state on each new calculation
-    var drawer = document.getElementById('detailed-metrics-drawer');
-    var btn    = document.getElementById('drawer-toggle');
-    drawer.style.display = 'none';
-    btn.textContent = 'View Detailed Cost Breakdown Metrics';
+      // Reset drawer to closed state on each new calculation
+  var drawer = document.getElementById('detailed-metrics-drawer');
+  var btn = document.getElementById('drawer-toggle');
+  drawer.style.display = 'none';
+  btn.textContent = 'View Detailed Cost Breakdown Metrics';
 
-    // Screen swap
-    document.getElementById('form-view').style.display    = 'none';
-    document.getElementById('results-view').style.display = 'block';
-    window.scrollTo(0, 0);
+  // Screen swap
+  document.getElementById('form-view').style.display = 'none';
+  document.getElementById('results-view').style.display = 'block';
+  
+  // FIX: Force the main Netlify window layout to slide back up smoothly
+  if (window.parent) {
+    window.parent.scrollTo({ top: 0, behavior: 'smooth' });
   }
+}
 </script>
 
 <script>
 (function() {
-    function sendHeight() {
-        window.parent.postMessage({ 
-            type: 'iframe-resize', 
-            height: document.documentElement.scrollHeight 
-        }, '*');
-    }
-    window.addEventListener('load', sendHeight);
-    new MutationObserver(sendHeight).observe(document.body, { 
-        subtree: true, 
-        childList: true, 
-        attributes: true 
-    });
+  function sendHeight() {
+    window.parent.postMessage({ type: 'iframe-resize', height: document.documentElement.scrollHeight }, '*');
+  }
+  window.addEventListener('load', sendHeight);
+  new MutationObserver(sendHeight).observe(document.body, { subtree: true, childList: true, attributes: true });
 })();
 </script>
 </body>
