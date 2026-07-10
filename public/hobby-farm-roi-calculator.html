@@ -617,49 +617,46 @@
     sendHeightUpdate();
   }
 
-  /* ── Accordion Toggle ── */
-  function toggleDetailDrawer() {
-    var drawer = document.getElementById('detailed-metrics-drawer');
-    var toggle = document.getElementById('drawer-toggle');
-    if (drawer.style.display !== 'none') {
-      drawer.style.display = 'none';
-      toggle.textContent   = 'View Detailed Capital Closing \u0026 Operational Ledger';
-    } else {
-      drawer.style.display = 'block';
-      toggle.textContent   = 'Collapse Detailed Ledger';
+ /* ── Accordion Toggle ── */
+function toggleDetailDrawer() {
+  var drawer = document.getElementById('detailed-metrics-drawer');
+  var toggle = document.getElementById('drawer-toggle');
+  if (drawer.style.display !== 'none') {
+    drawer.style.display = 'none';
+    toggle.textContent = 'View Detailed Capital Closing \u0026 Operational Ledger';
+  } else {
+    drawer.style.display = 'block';
+    toggle.textContent = 'Collapse Detailed Ledger';
+    
+    // FIX: Automatically slide parent window into clear focus when drawer expands
+    if (window.parent) {
+      window.parent.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    sendHeightUpdate();
   }
+  sendHeightUpdate();
+}
 
-  /* ── Height postMessage ── */
-  function sendHeightUpdate() {
-    setTimeout(function() {
-      var bodyHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
-      window.parent.postMessage(
-        { type: 'resize-iframe', slug: 'hobby-farm-roi', height: Math.max(640, bodyHeight) },
-        '*'
-      );
-    }, 50);
+/* ── Height postMessage ── */
+function sendHeightUpdate() {
+  setTimeout(function() {
+    var bodyHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+    window.parent.postMessage(
+      { type: 'resize-iframe', slug: 'hobby-farm-roi', height: Math.max(640, bodyHeight) },
+      '*'
+    );
+  }, 50);
+}
+window.addEventListener('load', sendHeightUpdate);
+window.addEventListener('resize', sendHeightUpdate);
+
+/* ── Parent layout height tracker ── */
+(function() {
+  function sendHeight() {
+    window.parent.postMessage({ type: 'iframe-resize', height: document.documentElement.scrollHeight }, '*');
   }
-
-  window.addEventListener('load', sendHeightUpdate);
-  window.addEventListener('resize', sendHeightUpdate);
-
-  /* ── Parent layout height tracker ── */
-  (function() {
-    function sendHeight() {
-      window.parent.postMessage({
-        type: 'iframe-resize',
-        height: document.documentElement.scrollHeight
-      }, '*');
-    }
-    window.addEventListener('load', sendHeight);
-    new MutationObserver(sendHeight).observe(document.body, {
-      subtree: true,
-      childList: true,
-      attributes: true
-    });
-  })();
+  window.addEventListener('load', sendHeight);
+  new MutationObserver(sendHeight).observe(document.body, { subtree: true, childList: true, attributes: true });
+})();
 </script>
 </body>
 </html>
