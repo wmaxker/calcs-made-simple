@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // 2. ONLY run the ad engine if the user is on an actual calculator app
     // This leaves the homepage completely clean, ad-free, and highly professional!
-    if (currentSlug !== '' && currentSlug !== 'homepage' && typeof renderAdvertisement === 'function') {
+ if (window.location.search.includes('app=') && typeof renderAdvertisement === 'function') {
         renderAdvertisement(adConfig, currentSlug);
     }
 });
