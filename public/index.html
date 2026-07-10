@@ -405,9 +405,6 @@ function showWelcome() {
     wc.style.display = 'flex'; 
 
     /* FIXED: Automatically refresh the homepage ad instead of destroying it completely */
-    if (typeof renderAdvertisement === 'function' && typeof adConfig !== 'undefined') {
-        renderAdvertisement(adConfig, 'homepage');
-    }
 } 
 
 function router() { 
