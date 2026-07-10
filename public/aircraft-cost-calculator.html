@@ -948,26 +948,23 @@
   }
 
   function showForm() {
-    document.getElementById('results-view').style.display = 'none';
-    document.getElementById('form-view').style.display    = 'block';
-    window.scrollTo(0, 0);
+  document.getElementById('results-view').style.display = 'none';
+  document.getElementById('form-view').style.display = 'block';
+  
+  // FIX: Force the main Netlify window to slide up when returning to the form
+  if (window.parent) {
+    window.parent.scrollTo({ top: 0, behavior: 'smooth' });
   }
+}
 </script>
 
 <script>
 (function() {
-    function sendHeight() {
-        window.parent.postMessage({ 
-            type: 'iframe-resize', 
-            height: document.documentElement.scrollHeight 
-        }, '*');
-    }
-    window.addEventListener('load', sendHeight);
-    new MutationObserver(sendHeight).observe(document.body, { 
-        subtree: true, 
-        childList: true, 
-        attributes: true 
-    });
+  function sendHeight() {
+    window.parent.postMessage({ type: 'iframe-resize', height: document.documentElement.scrollHeight }, '*');
+  }
+  window.addEventListener('load', sendHeight);
+  new MutationObserver(sendHeight).observe(document.body, { subtree: true, childList: true, attributes: true });
 })();
 </script>
 </body>
