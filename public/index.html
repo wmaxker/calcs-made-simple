@@ -284,108 +284,91 @@
             document.head.appendChild(schemaScript);
         }
 
-        function loadApp(slug) {
-            /*
-             * OPT 3: Static route prototype-safe check via hasOwnProperty.call
-             * Prevents runtime exceptions if URL tracking strings match generic object prototype properties.
-             * Static footer route short-circuit: about, privacy, terms, contact.
-             */
-            if (Object.prototype.hasOwnProperty.call(STATIC_ROUTES, slug)) {
-                const routeConfig = STATIC_ROUTES[slug];
-                activeSlug = slug;
+       function loadApp(slug) {
+  /*
+   * OPT 3: Static route prototype-safe check via hasOwnProperty.call
+   * Prevents runtime exceptions if URL tracking strings match generic object prototype properties.
+   * Static footer route short-circuit: about, privacy, terms, contact.
+   */
+  if (Object.prototype.hasOwnProperty.call(STATIC_ROUTES, slug)) {
+    const routeConfig = STATIC_ROUTES[slug];
+    activeSlug = slug;
 
-                /* OPT 4: Toggle display state only — static welcome markup stays in the DOM */
-                document.getElementById('welcome-container').style.display = 'none';
-                const iframe = document.getElementById('app-viewport');
-                iframe.style.display = 'block';
+    /* OPT 4: Toggle display state only — static welcome markup stays in the DOM */
+    document.getElementById('welcome-container').style.display = 'none';
+    const iframe = document.getElementById('app-viewport');
+    iframe.style.display = 'block';
 
-                /*
-                 * OPT 6: Use location.replace() instead of direct .src assignment.
-                 * Prevents static page loads from polluting the browser history stack.
-                 */
-                try {
-                    iframe.contentWindow.location.replace(routeConfig.file);
-                } catch(e) {
-                    iframe.src = routeConfig.file;
-                }
+    /*
+     * OPT 6: Use location.replace() instead of direct .src assignment.
+     * Prevents static page loads from polluting the browser history stack.
+     */
+    try {
+      iframe.contentWindow.location.replace(routeConfig.file);
+    } catch(e) {
+      iframe.src = routeConfig.file;
+    }
 
-                /* Clear Active Nav States — no sidebar calculator should appear highlighted */
-                document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+    /* Clear Active Nav States — no sidebar calculator should appear highlighted */
+    document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
 
-                /* Monetization Compliance: reset ad container to clean homepage state */
-                const adContainer = document.getElementById('sidebar-ad-container');
-                adContainer.innerHTML = '';
-                adContainer.style.background = '#f8fafc';
-                adContainer.style.border = 'none';
+    /* Monetization Compliance: reset ad container to clean homepage state */
+    const adContainer = document.getElementById('sidebar-ad-container');
+    if (adContainer) {
+      adContainer.innerHTML = '';
+    }
 
-                /* SEO & Schema.org metadata */
-                updateStaticRouteMetadata(routeConfig);
+    /* SEO & Schema.org metadata */
+    updateStaticRouteMetadata(routeConfig);
 
-                /* History Management: only push state if the query param doesn't already match */
-                const currentSlug = new URLSearchParams(window.location.search).get('app');
-                if (currentSlug !== slug) {
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('app', slug);
-                    history.pushState({ slug }, '', url.toString());
-                }
+    /* History Management: only push state if the query param doesn't already match */
+    const currentSlug = new URLSearchParams(window.location.search).get('app');
+    if (currentSlug !== slug) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('app', slug);
+      history.pushState({ slug }, '', url.toString());
+    }
 
-                /*
-                 * OPT 7: Mobile smooth scroll — glides viewport down to .main-content-card
-                 * so the user sees the content load after clicking a footer link on narrow screens.
-                 */
-                if (window.innerWidth <= 960) {
-                    const card = document.querySelector('.main-content-card');
-                    if (card) {
-                        window.scrollTo({ top: card.offsetTop - 16, behavior: 'smooth' });
-                    }
-                }
+    /* FIXED: Glide main window right back to the top when navigating footer routes */
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
 
-                return;
-            }
+  /* ── Calculator route handling (falls through from static-route short-circuit) ── */
+  activeSlug = slug;
+  document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('btn-' + slug);
+  if (btn) btn.classList.add('active');
 
-            /* ── Calculator route handling (falls through from static-route short-circuit) ── */
+  /* OPT 4: Toggle display state only — static welcome markup stays in the DOM */
+  document.getElementById('welcome-container').style.display = 'none';
+  const iframe = document.getElementById('app-viewport');
+  iframe.style.display = 'block';
 
-            activeSlug = slug;
-            document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
-            const btn = document.getElementById('btn-' + slug);
-            if (btn) btn.classList.add('active');
+  /*
+   * OPT 6: Use location.replace() instead of direct .src assignment.
+   * Keeps the parent app's popstate router as the sole Back/Forward controller.
+   */
+  try {
+    iframe.contentWindow.location.replace(slug + '.html');
+  } catch(e) {
+    iframe.src = slug + '.html';
+  }
 
-            /* OPT 4: Toggle display state only — static welcome markup stays in the DOM */
-            document.getElementById('welcome-container').style.display = 'none';
-            const iframe = document.getElementById('app-viewport');
-            iframe.style.display = 'block';
+  const url = new URL(window.location.href);
+  url.searchParams.set('app', slug);
+  history.pushState({ slug }, '', url.toString());
 
-            /*
-             * OPT 6: Use location.replace() instead of direct .src assignment.
-             * Keeps the parent app's popstate router as the sole Back/Forward controller.
-             * Falls back to iframe.src if contentWindow is not yet accessible (e.g. about:blank cross-origin).
-             */
-            try {
-                iframe.contentWindow.location.replace(slug + '.html');
-            } catch(e) {
-                iframe.src = slug + '.html';
-            }
+  /* CHANGE 3: Hook — inject dynamic ad swap logic here (Type A / B / C per calculator) */
+  if (typeof initAdEngine === 'function') {
+    initAdEngine();
+  }
 
-            const url = new URL(window.location.href);
-            url.searchParams.set('app', slug);
-            history.pushState({ slug }, '', url.toString());
+  /* FIXED: Glide main window right back to the top when swapping calculators */
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-            /* CHANGE 3: Hook — inject dynamic ad swap logic here (Type A / B / C per calculator) */
-            if (typeof initAdEngine === 'function') { initAdEngine(); }
-
-            /*
-             * OPT 7: Mobile smooth scroll — glides viewport down to .main-content-card
-             * so the user sees the tool load immediately after clicking a sidebar button on narrow screens.
-             */
-               if (window.innerWidth <= 960) { 
-        const card = document.querySelector('.main-content-card'); 
-        if (card) { 
-            window.scrollTo({ top: card.offsetTop - 16, behavior: 'smooth' }); 
-        } 
-    } 
-} 
-
-/* CHANGE 3 / OPT 4: showWelcome toggles display state only — no innerHTML rebuild */ 
+/* CHANGE 3 / OPT 4: showWelcome toggles display state only — no innerHTML rebuild */
 function showWelcome() {
   activeSlug = null;
   document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
