@@ -39,20 +39,15 @@ const adConfig = {
     "slot": { 
       "imagePath": "/ads/placeholders/generic-default.svg", 
       "linkUrl": "/?app=contact", 
-      "alt": "Advertisement" 
-    } 
-  } 
+         "alt": "Advertisement"
+    }
+  }
 };
 
-// INTEGRATION HOOK: Automatically detects the current page and runs the ad engine
+// INTEGRATION HOOK: Safely exposes the ad configuration object to the global window
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Automatically grab the current sub-page slug from the browser URL path
-    const pathSegments = window.location.pathname.split('/');
-    const currentSlug = pathSegments[pathSegments.length - 1] || '';
-    
-    // 2. ONLY run the ad engine if the user is on an actual calculator app
-    // This leaves the homepage completely clean, ad-free, and highly professional!
- if (window.location.search.includes('app=') && typeof renderAdvertisement === 'function') {
-        renderAdvertisement(adConfig, currentSlug);
-    }
+  // The master index.html script handles the specific page execution triggers.
+  if (typeof renderAdvertisement === 'function' && typeof activeSlug === 'string' && activeSlug) {
+    renderAdvertisement(adConfig, activeSlug);
+  }
 });
