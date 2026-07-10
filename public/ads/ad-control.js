@@ -39,19 +39,19 @@ const adConfig = {
     "slot": { 
       "imagePath": "/ads/placeholders/generic-default.svg", 
       "linkUrl": "/?app=contact", 
-            "alt": "Advertisement"
+               "alt": "Advertisement"
     }
   }
 };
 
 // INTEGRATION HOOK: Automatically detects the current page and runs the ad engine
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Grab the current layout route from the URL search bar
-  const urlParams = new URLSearchParams(window.location.search);
-  const currentSlug = urlParams.get('app');
+  // 1. Grab the current page filename from the URL path
+  const pathSegments = window.location.pathname.split('/');
+  const currentSlug = pathSegments[pathSegments.length - 1].replace('.html', '') || '';
 
-  // 2. Simple fix: Only run the ad script if an app query actually exists in the URL!
-  if (currentSlug && currentSlug !== 'homepage' && typeof renderAdvertisement === 'function') {
+  // 2. Simple fix: Only run ads if there's a slug, and it's NOT the root index file or homepage
+  if (currentSlug && currentSlug !== 'index' && currentSlug !== 'homepage' && typeof renderAdvertisement === 'function') {
     renderAdvertisement(adConfig, currentSlug);
   }
 });
