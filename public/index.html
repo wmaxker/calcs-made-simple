@@ -284,7 +284,7 @@
             document.head.appendChild(schemaScript);
         }
 
-       function loadApp(slug) {
+      function loadApp(slug) {
   /*
    * OPT 3: Static route prototype-safe check via hasOwnProperty.call
    * Prevents runtime exceptions if URL tracking strings match generic object prototype properties.
@@ -329,8 +329,7 @@
       history.pushState({ slug }, '', url.toString());
     }
 
-    /* FIXED: Glide main window right back to the top when navigating footer routes */
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0 });
     return;
   }
 
@@ -364,8 +363,7 @@
     initAdEngine();
   }
 
-  /* FIXED: Glide main window right back to the top when swapping calculators */
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0 });
 }
 
 /* CHANGE 3 / OPT 4: showWelcome toggles display state only — no innerHTML rebuild */
@@ -413,6 +411,15 @@ if (document.readyState === 'loading') {
   router();
 }
 window.addEventListener('popstate', router);
+
+// MASTER AUTO-SCROLL CONTROLLER: Listens for any layout change inside the frame and forces a top-scroll safety match
+const observer = new MutationObserver(() => {
+  const iframe = document.getElementById('app-viewport');
+  if (iframe && iframe.style.height) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+observer.observe(document.getElementById('app-viewport'), { attributes: true, attributeFilter: ['style'] });
 </script>
 
 <!-- FIXED: Loaded engine first, control second, and removed the broken relative dots -->
