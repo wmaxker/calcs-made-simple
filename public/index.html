@@ -404,7 +404,7 @@ function showWelcome() {
   const wc = document.getElementById('welcome-container');
   wc.style.display = 'flex';
 
-  /* Clear the homepage ad container entirely */
+  /* Force the ad container to completely clear on the homepage welcome view */
   const adContainer = document.getElementById('sidebar-ad-container');
   if (adContainer) {
     adContainer.innerHTML = '';
@@ -413,15 +413,7 @@ function showWelcome() {
 
 function router() {
   const slug = new URLSearchParams(window.location.search).get('app');
-  if (slug) {
-    loadApp(slug);
-    /* FORCE TRIGGER: Safely fires the ad script for calculator views on initial deep links */
-    if (typeof renderAdvertisement === 'function' && typeof adConfig !== 'undefined' && !Object.prototype.hasOwnProperty.call(STATIC_ROUTES, slug)) {
-      renderAdvertisement(adConfig, slug);
-    }
-  } else {
-    showWelcome();
-  }
+  slug ? loadApp(slug) : showWelcome();
 }
 
 /* 
